@@ -25,6 +25,27 @@ body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:in
 .player-history.hidden-history{display:none}
 .player-history{margin-top:13px}
 .review{margin-top:18px}.review pre{white-space:pre-wrap;background:#08111f;padding:14px;border-radius:10px;max-height:350px;overflow:auto}
+.player-tabs{
+  display:flex;
+  gap:22px;
+  border-bottom:1px solid #334155;
+  margin-bottom:18px;
+  overflow-x:auto;
+}
+.player-tab{
+  background:transparent;
+  border:0;
+  color:#cbd5e1;
+  padding:12px 2px;
+  font-weight:800;
+  white-space:nowrap;
+  border-bottom:3px solid transparent;
+}
+.player-tab:hover{color:white}
+.player-tab.active{
+  color:white;
+  border-bottom-color:#7c3aed;
+}
 .position-group{margin-bottom:20px}
 .position-title{display:flex;justify-content:space-between;align-items:center;background:#172238;padding:14px 16px;border-radius:12px;margin-bottom:10px}
 .position-title h2{font-size:20px}
@@ -101,7 +122,15 @@ body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:in
     </div><div class="field"><label>Nacionalidade</label><input id="pNationality"></div>
   <div class="field"><label>Idade</label><input id="pAge" type="number"></div><div class="field"><label>Status</label><select id="pStatus"><option>Titular</option><option>Rotação</option><option>Reserva</option><option>Promessa</option><option>Emprestado</option><option>Vendido</option></select></div>
  </div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="savePlayer()">Salvar</button><button class="btn secondary" onclick="closePlayerForm()">Cancelar</button></div></div>
- <div id="playersList"></div>
+ <div class="player-tabs" id="playerTabs">
+  <button class="player-tab active" data-group="Todos" onclick="selectPlayerGroup('Todos')">Todos</button>
+  <button class="player-tab" data-group="Goleiro" onclick="selectPlayerGroup('Goleiro')">🧤 Goleiros</button>
+  <button class="player-tab" data-group="Defesa" onclick="selectPlayerGroup('Defesa')">🛡️ Defesa</button>
+  <button class="player-tab" data-group="Meio" onclick="selectPlayerGroup('Meio')">⚙️ Meio</button>
+  <button class="player-tab" data-group="Ataque" onclick="selectPlayerGroup('Ataque')">⚽ Ataque</button>
+  <button class="player-tab" data-group="Não definido" onclick="selectPlayerGroup('Não definido')">❓ Não definidos</button>
+</div>
+<div id="playersList"></div>
 </section>
 
 <section id="stats" class="hidden">
@@ -146,12 +175,12 @@ body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:in
 </main>
 
 <script>
-const KEY="fmCareerStats_v3",SECTIONS=["home","dashboard","seasons","players","stats","matches","titles","transfers","ai","backup"];let currentCareerId=null,currentAI=null;
+const KEY="fmCareerStats_v3",SECTIONS=["home","dashboard","seasons","players","stats","matches","titles","transfers","ai","backup"];let currentCareerId=null,currentAI=null,currentPlayerGroup="Todos";
 const $=id=>document.getElementById(id),db0=()=>({careers:[],seasons:[],players:[],playerStats:[],matches:[],titles:[],transfers:[],classifications:[]});
 function db(){try{return JSON.parse(localStorage.getItem(KEY))||db0()}catch{return db0()}}function saveDB(x){localStorage.setItem(KEY,JSON.stringify(x))}function uid(){return Date.now()+Math.floor(Math.random()*10000)}function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function n(v){return Number(v||0)}function toggle(id){$(id).classList.toggle("hidden")}function showOnly(id){SECTIONS.forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");scrollTo(0,0)}function career(){return db().careers.find(x=>x.id===currentCareerId)}
 function goHome(){currentCareerId=null;$("sidebar").classList.add("hidden");$("content").classList.add("full");showOnly("home");renderCareers()}
 function openCareer(id){currentCareerId=id;$("sidebar").classList.remove("hidden");$("content").classList.remove("full");showDashboard()}
-function showSection(id){showOnly(id);fillSeasonSelects();if(id==="players")renderPlayers();if(id==="seasons")renderSeasons();if(id==="stats"){fillRankingFilters();renderTotals();}if(id==="matches")renderMatches();if(id==="titles")renderTitles();if(id==="transfers")renderTransfers()}
+function showSection(id){showOnly(id);fillSeasonSelects();if(id==="players"){currentPlayerGroup="Todos";document.querySelectorAll(".player-tab").forEach(b=>b.classList.toggle("active",b.dataset.group==="Todos"));renderPlayers();}if(id==="seasons")renderSeasons();if(id==="stats"){fillRankingFilters();renderTotals();}if(id==="matches")renderMatches();if(id==="titles")renderTitles();if(id==="transfers")renderTransfers()}
 function showDashboard(){const c=career();if(!c)return goHome();$("miniClub").textContent=c.club;$("miniSeason").textContent=c.season;$("heroClub").textContent=c.club;$("heroMeta").innerHTML=[c.type,"Save: "+c.name,"Temporada: "+c.season,c.coach?"Treinador: "+c.coach:"",c.country||""].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");$("heroImg").innerHTML=c.crest?`<img class="crest" src="${esc(c.crest)}">`:"🛡️";const D=db(),p=D.players.filter(x=>x.careerId===currentCareerId),s=D.seasons.filter(x=>x.careerId===currentCareerId),m=D.matches.filter(x=>x.careerId===currentCareerId),t=D.titles.filter(x=>x.careerId===currentCareerId);$("dashStats").innerHTML=[["Jogadores",p.length],["Temporadas",s.length],["Partidas",m.length],["Títulos",t.length]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");showOnly("dashboard")}
 function careerTypeChanged(){$("clubSearchArea").classList.toggle("hidden",$("cType").value==="Clube fictício")}
 async function searchClub(){const q=$("clubQuery").value.trim();if(q.length<2)return alert("Digite pelo menos 2 letras.");$("clubResults").innerHTML="Pesquisando...";try{const r=await fetch("/api/buscar-clube?nome="+encodeURIComponent(q)),j=await r.json();if(!r.ok)throw Error(j.erro||"Erro");const teams=j.equipes||[];$("clubResults").innerHTML=teams.length?teams.map((x,i)=>`<div class="search-item"><div style="display:flex;gap:10px;align-items:center">${x.escudo?`<img src="${esc(x.escudo)}">`:"🛡️"}<div><strong>${esc(x.nome)}</strong><div class="muted">${esc(x.pais||"")} • ${esc(x.liga||"")}</div></div></div><button class="btn success" onclick='chooseClub(${JSON.stringify(teams[i]).replaceAll("'","&#39;")})'>Selecionar</button></div>`).join(""):'Nenhum resultado.'}catch(e){$("clubResults").innerHTML="Erro: "+esc(e.message)}}
@@ -200,15 +229,64 @@ function positionGroupInfo(group){
     "Não definido":["❓","Não definidos"]
   }[group]||["❓","Não definidos"];
 }
+function selectPlayerGroup(group){
+  currentPlayerGroup=group;
+
+  document.querySelectorAll(".player-tab").forEach(button=>{
+    button.classList.toggle("active",button.dataset.group===group);
+  });
+
+  renderPlayers();
+}
+
+function updatePlayerTabCounts(players){
+  const counts={
+    "Todos":players.length,
+    "Goleiro":0,
+    "Defesa":0,
+    "Meio":0,
+    "Ataque":0,
+    "Não definido":0
+  };
+
+  players.forEach(player=>{
+    const group=normalizePositionGroup(player.position);
+    counts[group]=(counts[group]||0)+1;
+  });
+
+  const labels={
+    "Todos":"Todos",
+    "Goleiro":"🧤 Goleiros",
+    "Defesa":"🛡️ Defesa",
+    "Meio":"⚙️ Meio",
+    "Ataque":"⚽ Ataque",
+    "Não definido":"❓ Não definidos"
+  };
+
+  document.querySelectorAll(".player-tab").forEach(button=>{
+    const group=button.dataset.group;
+    button.textContent=`${labels[group]} (${counts[group]||0})`;
+  });
+}
+
 function renderPlayers(){
-  const D=db(),players=D.players.filter(x=>x.careerId===currentCareerId);
+  const D=db();
+  const allPlayers=D.players.filter(x=>x.careerId===currentCareerId);
+
+  updatePlayerTabCounts(allPlayers);
+
+  const players=currentPlayerGroup==="Todos"
+    ? allPlayers
+    : allPlayers.filter(player=>normalizePositionGroup(player.position)===currentPlayerGroup);
 
   if(!players.length){
     $("playersList").innerHTML='<div class="empty">Nenhum jogador.</div>';
     return;
   }
 
-  const groups=["Goleiro","Defesa","Meio","Ataque","Não definido"];
+  const groups=currentPlayerGroup==="Todos"
+    ? ["Goleiro","Defesa","Meio","Ataque","Não definido"]
+    : [currentPlayerGroup];
 
   $("playersList").innerHTML=groups.map(group=>{
     const grouped=players.filter(p=>normalizePositionGroup(p.position)===group);
