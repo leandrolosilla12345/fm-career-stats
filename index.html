@@ -110,7 +110,7 @@ button, input, select {
 }
 
 .form-card {
-    max-width: 700px;
+    max-width: 760px;
     background: #111827;
     padding: 25px;
     border-radius: 15px;
@@ -120,11 +120,16 @@ button, input, select {
     margin-bottom: 20px;
 }
 
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
 .form-card input,
 .form-card select {
     width: 100%;
     padding: 13px;
-    margin-bottom: 14px;
     border: 1px solid #374151;
     border-radius: 9px;
     background: #0f172a;
@@ -135,6 +140,12 @@ button, input, select {
 .form-card input:focus,
 .form-card select:focus {
     border-color: #7c3aed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
 }
 
 .cards {
@@ -189,6 +200,15 @@ button, input, select {
     border: none;
     border-radius: 8px;
     background: #dc2626;
+    color: white;
+    cursor: pointer;
+}
+
+.edit-button {
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #d97706;
     color: white;
     cursor: pointer;
 }
@@ -265,6 +285,45 @@ button, input, select {
     color: #94a3b8;
 }
 
+.table-wrapper {
+    overflow-x: auto;
+    background: #111827;
+    border-radius: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 950px;
+}
+
+th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #253047;
+}
+
+th {
+    color: #cbd5e1;
+    background: #172033;
+}
+
+td {
+    color: #e5e7eb;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.empty-state {
+    background: #111827;
+    padding: 28px;
+    border-radius: 14px;
+    color: #cbd5e1;
+}
+
 .hidden {
     display: none !important;
 }
@@ -286,6 +345,10 @@ button, input, select {
         align-items: flex-start;
         flex-direction: column;
     }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
@@ -298,7 +361,7 @@ button, input, select {
 
         <div class="menu">
             <button id="menuInicio" class="active" onclick="mostrarInicio()">🏠 Início</button>
-            <button onclick="mostrarAviso('Jogadores')">👥 Jogadores</button>
+            <button onclick="abrirElencoPeloMenu()">👥 Jogadores</button>
             <button onclick="mostrarAviso('Temporadas')">📅 Temporadas</button>
             <button onclick="mostrarAviso('Títulos')">🏆 Títulos</button>
             <button onclick="mostrarAviso('Estatísticas')">📊 Estatísticas</button>
@@ -312,7 +375,7 @@ button, input, select {
             <div class="header">
                 <h1>Meus saves</h1>
 
-                <button class="primary-button" onclick="mostrarFormulario()">
+                <button class="primary-button" onclick="mostrarFormularioSave()">
                     + Criar novo save
                 </button>
             </div>
@@ -321,21 +384,23 @@ button, input, select {
                 <div class="form-card">
                     <h2>Criar novo save</h2>
 
-                    <select id="tipoSave">
-                        <option value="">Escolha o tipo de save</option>
-                        <option value="Clube real">Clube real</option>
-                        <option value="Clube fictício">Clube fictício</option>
-                        <option value="Seleção nacional">Seleção nacional</option>
-                    </select>
+                    <div class="form-grid">
+                        <select id="tipoSave">
+                            <option value="">Escolha o tipo de save</option>
+                            <option value="Clube real">Clube real</option>
+                            <option value="Clube fictício">Clube fictício</option>
+                            <option value="Seleção nacional">Seleção nacional</option>
+                        </select>
 
-                    <input id="nomeSave" type="text" placeholder="Nome do save">
-                    <input id="nomeClube" type="text" placeholder="Nome do clube ou seleção">
-                    <input id="treinador" type="text" placeholder="Nome do treinador">
-                    <input id="temporada" type="text" placeholder="Temporada inicial, exemplo: 2026/27">
+                        <input id="nomeSave" type="text" placeholder="Nome do save">
+                        <input id="nomeClube" type="text" placeholder="Nome do clube ou seleção">
+                        <input id="treinador" type="text" placeholder="Nome do treinador">
+                        <input id="temporada" type="text" placeholder="Temporada inicial, exemplo: 2026/27">
+                    </div>
 
-                    <button class="primary-button" onclick="salvarSave()">
-                        Salvar save
-                    </button>
+                    <div class="form-actions">
+                        <button class="primary-button" onclick="salvarSave()">Salvar save</button>
+                    </div>
                 </div>
             </div>
 
@@ -361,7 +426,7 @@ button, input, select {
             <div class="stat-grid">
                 <div class="stat-card">
                     <span>Jogadores</span>
-                    <strong>0</strong>
+                    <strong id="contadorJogadores">0</strong>
                 </div>
                 <div class="stat-card">
                     <span>Temporadas</span>
@@ -380,7 +445,7 @@ button, input, select {
             <h2 class="section-title">Gerenciar save</h2>
 
             <div class="feature-grid">
-                <div class="feature-card" onclick="mostrarAviso('Elenco')">
+                <div class="feature-card" onclick="abrirElenco()">
                     <h3>👥 Elenco</h3>
                     <p>Cadastre e acompanhe os jogadores.</p>
                 </div>
@@ -422,14 +487,80 @@ button, input, select {
             </div>
         </section>
 
+        <section id="telaElenco" class="hidden">
+            <div class="header">
+                <div>
+                    <button class="secondary-button" onclick="voltarAoSave()">← Voltar ao save</button>
+                    <h1 style="margin-top: 20px;">Elenco</h1>
+                </div>
+
+                <button class="primary-button" onclick="mostrarFormularioJogador()">
+                    + Adicionar jogador
+                </button>
+            </div>
+
+            <div id="formularioJogador" class="form-area">
+                <div class="form-card">
+                    <h2 id="tituloFormularioJogador">Adicionar jogador</h2>
+
+                    <input id="jogadorId" type="hidden">
+
+                    <div class="form-grid">
+                        <input id="jogadorNome" type="text" placeholder="Nome do jogador">
+                        <input id="jogadorNumero" type="number" min="0" placeholder="Número da camisa">
+
+                        <select id="jogadorPosicao">
+                            <option value="">Posição</option>
+                            <option>Goleiro</option>
+                            <option>Lateral-direito</option>
+                            <option>Lateral-esquerdo</option>
+                            <option>Zagueiro</option>
+                            <option>Volante</option>
+                            <option>Meio-campista</option>
+                            <option>Meia ofensivo</option>
+                            <option>Ponta-direita</option>
+                            <option>Ponta-esquerda</option>
+                            <option>Atacante</option>
+                        </select>
+
+                        <input id="jogadorNacionalidade" type="text" placeholder="Nacionalidade">
+                        <input id="jogadorIdade" type="number" min="0" placeholder="Idade">
+
+                        <select id="jogadorStatus">
+                            <option value="">Status no elenco</option>
+                            <option>Titular</option>
+                            <option>Rotação</option>
+                            <option>Reserva</option>
+                            <option>Promessa</option>
+                            <option>Emprestado</option>
+                            <option>Vendido</option>
+                        </select>
+
+                        <input id="jogadorJogos" type="number" min="0" value="0" placeholder="Jogos">
+                        <input id="jogadorGols" type="number" min="0" value="0" placeholder="Gols">
+                        <input id="jogadorAssistencias" type="number" min="0" value="0" placeholder="Assistências">
+                        <input id="jogadorNota" type="number" min="0" max="10" step="0.01" value="0" placeholder="Nota média">
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="primary-button" onclick="salvarJogador()">Salvar jogador</button>
+                        <button class="secondary-button" onclick="cancelarEdicaoJogador()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="listaJogadores"></div>
+        </section>
+
     </main>
 </div>
 
 <script>
 const CHAVE_SAVES = "fmCareerStatsSaves";
+const CHAVE_JOGADORES = "fmCareerStatsJogadores";
 let saveAtualId = null;
 
-function mostrarFormulario() {
+function mostrarFormularioSave() {
     const formulario = document.getElementById("novoSave");
     formulario.style.display =
         formulario.style.display === "block" ? "none" : "block";
@@ -449,6 +580,20 @@ function guardarSaves(saves) {
     localStorage.setItem(CHAVE_SAVES, JSON.stringify(saves));
 }
 
+function obterJogadores() {
+    try {
+        const dadosSalvos = localStorage.getItem(CHAVE_JOGADORES);
+        return dadosSalvos ? JSON.parse(dadosSalvos) : [];
+    } catch (erro) {
+        console.error("Erro ao carregar jogadores:", erro);
+        return [];
+    }
+}
+
+function guardarJogadores(jogadores) {
+    localStorage.setItem(CHAVE_JOGADORES, JSON.stringify(jogadores));
+}
+
 function salvarSave() {
     const tipoSave = document.getElementById("tipoSave").value;
     const nomeSave = document.getElementById("nomeSave").value.trim();
@@ -464,22 +609,22 @@ function salvarSave() {
     const novoSave = {
         id: Date.now(),
         tipo: tipoSave,
-        nomeSave: nomeSave,
+        nomeSave,
         clube: nomeClube,
-        treinador: treinador,
-        temporada: temporada
+        treinador,
+        temporada
     };
 
     const saves = obterSaves();
     saves.push(novoSave);
     guardarSaves(saves);
 
-    limparFormulario();
+    limparFormularioSave();
     carregarSaves();
     document.getElementById("novoSave").style.display = "none";
 }
 
-function limparFormulario() {
+function limparFormularioSave() {
     document.getElementById("tipoSave").value = "";
     document.getElementById("nomeSave").value = "";
     document.getElementById("nomeClube").value = "";
@@ -495,28 +640,13 @@ function criarCard(save) {
         abrirSave(save.id);
     });
 
-    const titulo = document.createElement("h3");
-    titulo.textContent = save.clube;
-
-    const tipo = document.createElement("p");
-    tipo.textContent = `Tipo: ${save.tipo}`;
-
-    const nome = document.createElement("p");
-    nome.textContent = `Save: ${save.nomeSave}`;
-
-    const temporada = document.createElement("p");
-    temporada.textContent = `Temporada: ${save.temporada}`;
-
-    card.appendChild(titulo);
-    card.appendChild(tipo);
-    card.appendChild(nome);
-    card.appendChild(temporada);
-
-    if (save.treinador) {
-        const treinador = document.createElement("p");
-        treinador.textContent = `Treinador: ${save.treinador}`;
-        card.appendChild(treinador);
-    }
+    card.innerHTML = `
+        <h3>${escapeHtml(save.clube)}</h3>
+        <p>Tipo: ${escapeHtml(save.tipo)}</p>
+        <p>Save: ${escapeHtml(save.nomeSave)}</p>
+        <p>Temporada: ${escapeHtml(save.temporada)}</p>
+        ${save.treinador ? `<p>Treinador: ${escapeHtml(save.treinador)}</p>` : ""}
+    `;
 
     const acoes = document.createElement("div");
     acoes.className = "card-actions";
@@ -524,20 +654,18 @@ function criarCard(save) {
     const botaoAbrir = document.createElement("button");
     botaoAbrir.className = "open-button";
     botaoAbrir.textContent = "Abrir save";
-
-    botaoAbrir.addEventListener("click", function (evento) {
+    botaoAbrir.onclick = function (evento) {
         evento.stopPropagation();
         abrirSave(save.id);
-    });
+    };
 
     const botaoExcluir = document.createElement("button");
     botaoExcluir.className = "delete-button";
     botaoExcluir.textContent = "Excluir";
-
-    botaoExcluir.addEventListener("click", function (evento) {
+    botaoExcluir.onclick = function (evento) {
         evento.stopPropagation();
         excluirSave(save.id);
-    });
+    };
 
     acoes.appendChild(botaoAbrir);
     acoes.appendChild(botaoExcluir);
@@ -553,18 +681,12 @@ function carregarSaves() {
     lista.innerHTML = "";
 
     if (saves.length === 0) {
-        const mensagem = document.createElement("div");
-        mensagem.className = "card";
-
-        const titulo = document.createElement("h3");
-        titulo.textContent = "Nenhum save criado";
-
-        const texto = document.createElement("p");
-        texto.textContent = "Clique em “Criar novo save” para começar sua carreira.";
-
-        mensagem.appendChild(titulo);
-        mensagem.appendChild(texto);
-        lista.appendChild(mensagem);
+        lista.innerHTML = `
+            <div class="card">
+                <h3>Nenhum save criado</h3>
+                <p>Clique em “Criar novo save” para começar sua carreira.</p>
+            </div>
+        `;
         return;
     }
 
@@ -592,16 +714,31 @@ function abrirSave(id) {
     document.getElementById("detalheTreinador").textContent =
         save.treinador ? `Treinador: ${save.treinador}` : "";
 
-    document.getElementById("telaInicio").classList.add("hidden");
-    document.getElementById("telaSave").classList.remove("hidden");
-    window.scrollTo(0, 0);
+    atualizarContadorJogadores();
+    mostrarTela("telaSave");
 }
 
 function mostrarInicio() {
     saveAtualId = null;
-    document.getElementById("telaSave").classList.add("hidden");
-    document.getElementById("telaInicio").classList.remove("hidden");
+    mostrarTela("telaInicio");
     carregarSaves();
+}
+
+function voltarAoSave() {
+    if (!saveAtualId) {
+        mostrarInicio();
+        return;
+    }
+
+    abrirSave(saveAtualId);
+}
+
+function mostrarTela(idTela) {
+    ["telaInicio", "telaSave", "telaElenco"].forEach(function (id) {
+        document.getElementById(id).classList.add("hidden");
+    });
+
+    document.getElementById(idTela).classList.remove("hidden");
     window.scrollTo(0, 0);
 }
 
@@ -633,21 +770,254 @@ function editarSaveAtual() {
 }
 
 function excluirSave(id) {
-    const confirmar = window.confirm("Tem certeza de que deseja excluir este save?");
+    const confirmar = window.confirm("Tem certeza de que deseja excluir este save e seus jogadores?");
 
     if (!confirmar) return;
 
-    const saves = obterSaves();
-    const savesAtualizados = saves.filter(function (save) {
+    const savesAtualizados = obterSaves().filter(function (save) {
         return save.id !== id;
     });
 
+    const jogadoresAtualizados = obterJogadores().filter(function (jogador) {
+        return jogador.saveId !== id;
+    });
+
     guardarSaves(savesAtualizados);
+    guardarJogadores(jogadoresAtualizados);
     carregarSaves();
+}
+
+function abrirElenco() {
+    if (!saveAtualId) {
+        alert("Abra um save primeiro.");
+        return;
+    }
+
+    carregarJogadores();
+    mostrarTela("telaElenco");
+}
+
+function abrirElencoPeloMenu() {
+    if (!saveAtualId) {
+        alert("Abra um save para acessar o elenco.");
+        return;
+    }
+
+    abrirElenco();
+}
+
+function mostrarFormularioJogador() {
+    document.getElementById("formularioJogador").style.display = "block";
+}
+
+function cancelarEdicaoJogador() {
+    limparFormularioJogador();
+    document.getElementById("formularioJogador").style.display = "none";
+}
+
+function salvarJogador() {
+    if (!saveAtualId) {
+        alert("Abra um save primeiro.");
+        return;
+    }
+
+    const idExistente = document.getElementById("jogadorId").value;
+    const nome = document.getElementById("jogadorNome").value.trim();
+    const numero = document.getElementById("jogadorNumero").value;
+    const posicao = document.getElementById("jogadorPosicao").value;
+    const nacionalidade = document.getElementById("jogadorNacionalidade").value.trim();
+    const idade = document.getElementById("jogadorIdade").value;
+    const status = document.getElementById("jogadorStatus").value;
+    const jogos = document.getElementById("jogadorJogos").value;
+    const gols = document.getElementById("jogadorGols").value;
+    const assistencias = document.getElementById("jogadorAssistencias").value;
+    const nota = document.getElementById("jogadorNota").value;
+
+    if (!nome || !posicao || !status) {
+        alert("Preencha pelo menos nome, posição e status do jogador.");
+        return;
+    }
+
+    const jogadores = obterJogadores();
+
+    if (idExistente) {
+        const jogador = jogadores.find(function (item) {
+            return item.id === Number(idExistente);
+        });
+
+        if (jogador) {
+            Object.assign(jogador, {
+                nome,
+                numero: Number(numero || 0),
+                posicao,
+                nacionalidade,
+                idade: Number(idade || 0),
+                status,
+                jogos: Number(jogos || 0),
+                gols: Number(gols || 0),
+                assistencias: Number(assistencias || 0),
+                nota: Number(nota || 0)
+            });
+        }
+    } else {
+        jogadores.push({
+            id: Date.now(),
+            saveId: saveAtualId,
+            nome,
+            numero: Number(numero || 0),
+            posicao,
+            nacionalidade,
+            idade: Number(idade || 0),
+            status,
+            jogos: Number(jogos || 0),
+            gols: Number(gols || 0),
+            assistencias: Number(assistencias || 0),
+            nota: Number(nota || 0)
+        });
+    }
+
+    guardarJogadores(jogadores);
+    limparFormularioJogador();
+    document.getElementById("formularioJogador").style.display = "none";
+    carregarJogadores();
+    atualizarContadorJogadores();
+}
+
+function limparFormularioJogador() {
+    document.getElementById("jogadorId").value = "";
+    document.getElementById("tituloFormularioJogador").textContent = "Adicionar jogador";
+    document.getElementById("jogadorNome").value = "";
+    document.getElementById("jogadorNumero").value = "";
+    document.getElementById("jogadorPosicao").value = "";
+    document.getElementById("jogadorNacionalidade").value = "";
+    document.getElementById("jogadorIdade").value = "";
+    document.getElementById("jogadorStatus").value = "";
+    document.getElementById("jogadorJogos").value = "0";
+    document.getElementById("jogadorGols").value = "0";
+    document.getElementById("jogadorAssistencias").value = "0";
+    document.getElementById("jogadorNota").value = "0";
+}
+
+function carregarJogadores() {
+    const lista = document.getElementById("listaJogadores");
+    const jogadores = obterJogadores().filter(function (jogador) {
+        return jogador.saveId === saveAtualId;
+    });
+
+    if (jogadores.length === 0) {
+        lista.innerHTML = `
+            <div class="empty-state">
+                Nenhum jogador cadastrado. Clique em “Adicionar jogador”.
+            </div>
+        `;
+        return;
+    }
+
+    let linhas = "";
+
+    jogadores.forEach(function (jogador) {
+        linhas += `
+            <tr>
+                <td>${escapeHtml(jogador.nome)}</td>
+                <td>${jogador.numero || "-"}</td>
+                <td>${escapeHtml(jogador.posicao)}</td>
+                <td>${escapeHtml(jogador.nacionalidade || "-")}</td>
+                <td>${jogador.idade || "-"}</td>
+                <td>${escapeHtml(jogador.status)}</td>
+                <td>${jogador.jogos}</td>
+                <td>${jogador.gols}</td>
+                <td>${jogador.assistencias}</td>
+                <td>${Number(jogador.nota).toFixed(2)}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="edit-button" onclick="editarJogador(${jogador.id})">Editar</button>
+                        <button class="delete-button" onclick="excluirJogador(${jogador.id})">Excluir</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    lista.innerHTML = `
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jogador</th>
+                        <th>Nº</th>
+                        <th>Posição</th>
+                        <th>Nacionalidade</th>
+                        <th>Idade</th>
+                        <th>Status</th>
+                        <th>Jogos</th>
+                        <th>Gols</th>
+                        <th>Assistências</th>
+                        <th>Nota</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>${linhas}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function editarJogador(id) {
+    const jogador = obterJogadores().find(function (item) {
+        return item.id === id && item.saveId === saveAtualId;
+    });
+
+    if (!jogador) return;
+
+    document.getElementById("jogadorId").value = jogador.id;
+    document.getElementById("tituloFormularioJogador").textContent = "Editar jogador";
+    document.getElementById("jogadorNome").value = jogador.nome;
+    document.getElementById("jogadorNumero").value = jogador.numero;
+    document.getElementById("jogadorPosicao").value = jogador.posicao;
+    document.getElementById("jogadorNacionalidade").value = jogador.nacionalidade;
+    document.getElementById("jogadorIdade").value = jogador.idade;
+    document.getElementById("jogadorStatus").value = jogador.status;
+    document.getElementById("jogadorJogos").value = jogador.jogos;
+    document.getElementById("jogadorGols").value = jogador.gols;
+    document.getElementById("jogadorAssistencias").value = jogador.assistencias;
+    document.getElementById("jogadorNota").value = jogador.nota;
+
+    document.getElementById("formularioJogador").style.display = "block";
+    window.scrollTo(0, 0);
+}
+
+function excluirJogador(id) {
+    const confirmar = window.confirm("Tem certeza de que deseja excluir este jogador?");
+    if (!confirmar) return;
+
+    const jogadoresAtualizados = obterJogadores().filter(function (jogador) {
+        return jogador.id !== id;
+    });
+
+    guardarJogadores(jogadoresAtualizados);
+    carregarJogadores();
+    atualizarContadorJogadores();
+}
+
+function atualizarContadorJogadores() {
+    const total = obterJogadores().filter(function (jogador) {
+        return jogador.saveId === saveAtualId;
+    }).length;
+
+    document.getElementById("contadorJogadores").textContent = total;
 }
 
 function mostrarAviso(nomeArea) {
     alert(`A área “${nomeArea}” será criada na próxima etapa.`);
+}
+
+function escapeHtml(valor) {
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 document.addEventListener("DOMContentLoaded", carregarSaves);
