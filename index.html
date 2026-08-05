@@ -11,19 +11,6 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-}<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FM Career Stats</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -379,13 +366,54 @@ td {
         grid-template-columns: 1fr;
     }
 }
+
+.home-brand {
+    margin-bottom: 34px;
+}
+
+.home-logo {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.home-brand p {
+    color: #94a3b8;
+}
+
+.content.full-width {
+    width: 100%;
+    padding: 42px 5vw;
+}
+
+.field-stat {
+    background: #0d1628;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.field-stat label {
+    display: block;
+    color: #f8fafc;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.field-stat input {
+    width: 100%;
+    margin: 0;
+    background: #111c31;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="container">
-    <aside class="sidebar">
+    <aside id="sidebarPrincipal" class="sidebar hidden">
         <div class="logo">⚽ FM Career Stats</div>
 
         <div class="menu">
@@ -398,9 +426,14 @@ td {
         </div>
     </aside>
 
-    <main class="content">
+    <main id="conteudoPrincipal" class="content full-width">
 
         <section id="telaInicio">
+            <div class="home-brand">
+                <div class="home-logo">⚽ FM Career Stats</div>
+                <p>Organize todas as suas carreiras do Football Manager.</p>
+            </div>
+
             <div class="header">
                 <h1>Meus saves</h1>
 
@@ -567,22 +600,22 @@ td {
 
                         <div class="field-stat">
                             <label for="jogadorJogos">🏟️ Jogos</label>
-                            <input id="jogadorJogos" type="number" min="0" value="0">
+                            <input id="jogadorJogos" type="number" min="0" placeholder="0">
                         </div>
 
                         <div class="field-stat">
                             <label for="jogadorGols">⚽ Gols</label>
-                            <input id="jogadorGols" type="number" min="0" value="0">
+                            <input id="jogadorGols" type="number" min="0" placeholder="0">
                         </div>
 
                         <div class="field-stat">
                             <label for="jogadorAssistencias">🎯 Assistências</label>
-                            <input id="jogadorAssistencias" type="number" min="0" value="0">
+                            <input id="jogadorAssistencias" type="number" min="0" placeholder="0">
                         </div>
 
                         <div class="field-stat">
                             <label for="jogadorNota">⭐ Nota média</label>
-                            <input id="jogadorNota" type="number" min="0" max="10" step="0.01" value="0">
+                            <input id="jogadorNota" type="number" min="0" max="10" step="0.01" placeholder="0">
                         </div>
                     </div>
 
@@ -783,6 +816,14 @@ function mostrarTela(idTela) {
     });
 
     document.getElementById(idTela).classList.remove("hidden");
+
+    const sidebar = document.getElementById("sidebarPrincipal");
+    const conteudo = document.getElementById("conteudoPrincipal");
+    const estaDentroDeSave = idTela !== "telaInicio";
+
+    sidebar.classList.toggle("hidden", !estaDentroDeSave);
+    conteudo.classList.toggle("full-width", !estaDentroDeSave);
+
     window.scrollTo(0, 0);
 }
 
@@ -1064,1021 +1105,10 @@ function escapeHtml(valor) {
         .replaceAll("'", "&#039;");
 }
 
-document.addEventListener("DOMContentLoaded", carregarSaves);
-</script>
-
-</body>
-</html>
-
-
-body {
-    background: #0b1220;
-    color: white;
-}
-
-button, input, select {
-    font: inherit;
-}
-
-.container {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 240px;
-    background: #111827;
-    padding: 30px 20px;
-    flex-shrink: 0;
-}
-
-.logo {
-    font-size: 27px;
-    font-weight: bold;
-    margin-bottom: 40px;
-    line-height: 1.2;
-}
-
-.menu {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.menu button {
-    width: 100%;
-    background: #1f2937;
-    border: none;
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.menu button:hover,
-.menu button.active {
-    background: #374151;
-}
-
-.content {
-    flex: 1;
-    padding: 40px;
-    min-width: 0;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    font-size: 32px;
-}
-
-.primary-button {
-    background: #7c3aed;
-    border: none;
-    color: white;
-    padding: 14px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.primary-button:hover {
-    background: #6d28d9;
-}
-
-.secondary-button {
-    background: #1f2937;
-    border: none;
-    color: white;
-    padding: 12px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.form-area {
-    display: none;
-    margin-bottom: 30px;
-}
-
-.form-card {
-    max-width: 760px;
-    background: #111827;
-    padding: 25px;
-    border-radius: 15px;
-}
-
-.form-card h2 {
-    margin-bottom: 20px;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-}
-
-.form-card input,
-.form-card select {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #374151;
-    border-radius: 9px;
-    background: #0f172a;
-    color: white;
-    outline: none;
-}
-
-.form-card input:focus,
-.form-card select:focus {
-    border-color: #7c3aed;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 20px;
-}
-
-.card {
-    background: #111827;
-    padding: 25px;
-    border-radius: 15px;
-    min-height: 150px;
-}
-
-.save-card {
-    cursor: pointer;
-    transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.save-card:hover {
-    transform: translateY(-3px);
-    background: #172033;
-}
-
-.card h3 {
-    margin-bottom: 10px;
-}
-
-.card p {
-    color: #cbd5e1;
-    margin-top: 6px;
-}
-
-.card-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.open-button {
-    padding: 9px 12px;
-    border: none;
-    border-radius: 8px;
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-}
-
-.delete-button {
-    padding: 9px 12px;
-    border: none;
-    border-radius: 8px;
-    background: #dc2626;
-    color: white;
-    cursor: pointer;
-}
-
-.edit-button {
-    padding: 9px 12px;
-    border: none;
-    border-radius: 8px;
-    background: #d97706;
-    color: white;
-    cursor: pointer;
-}
-
-.detail-hero {
-    background: linear-gradient(135deg, #111827, #1e1b4b);
-    padding: 30px;
-    border-radius: 18px;
-    margin-bottom: 25px;
-}
-
-.detail-hero h2 {
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-.detail-meta {
-    color: #cbd5e1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin-bottom: 25px;
-}
-
-.stat-card {
-    background: #111827;
-    padding: 20px;
-    border-radius: 14px;
-}
-
-.stat-card span {
-    color: #94a3b8;
-    font-size: 14px;
-}
-
-.stat-card strong {
-    display: block;
-    font-size: 26px;
-    margin-top: 8px;
-}
-
-.section-title {
-    margin: 30px 0 16px;
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
-}
-
-.feature-card {
-    background: #111827;
-    padding: 22px;
-    border-radius: 14px;
-    cursor: pointer;
-}
-
-.feature-card:hover {
-    background: #172033;
-}
-
-.feature-card h3 {
-    margin-bottom: 8px;
-}
-
-.feature-card p {
-    color: #94a3b8;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-    background: #111827;
-    border-radius: 14px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 950px;
-}
-
-th, td {
-    padding: 14px 16px;
-    text-align: left;
-    border-bottom: 1px solid #253047;
-}
-
-th {
-    color: #cbd5e1;
-    background: #172033;
-}
-
-td {
-    color: #e5e7eb;
-}
-
-.table-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.empty-state {
-    background: #111827;
-    padding: 28px;
-    border-radius: 14px;
-    color: #cbd5e1;
-}
-
-.hidden {
-    display: none !important;
-}
-
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-    }
-
-    .content {
-        padding: 25px;
-    }
-
-    .header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-    <aside class="sidebar">
-        <div class="logo">⚽ FM Career Stats</div>
-
-        <div class="menu">
-            <button id="menuInicio" class="active" onclick="mostrarInicio()">🏠 Início</button>
-            <button onclick="abrirElencoPeloMenu()">👥 Jogadores</button>
-            <button onclick="mostrarAviso('Temporadas')">📅 Temporadas</button>
-            <button onclick="mostrarAviso('Títulos')">🏆 Títulos</button>
-            <button onclick="mostrarAviso('Estatísticas')">📊 Estatísticas</button>
-            <button onclick="mostrarAviso('Configurações')">⚙ Configurações</button>
-        </div>
-    </aside>
-
-    <main class="content">
-
-        <section id="telaInicio">
-            <div class="header">
-                <h1>Meus saves</h1>
-
-                <button class="primary-button" onclick="mostrarFormularioSave()">
-                    + Criar novo save
-                </button>
-            </div>
-
-            <div id="novoSave" class="form-area">
-                <div class="form-card">
-                    <h2>Criar novo save</h2>
-
-                    <div class="form-grid">
-                        <select id="tipoSave">
-                            <option value="">Escolha o tipo de save</option>
-                            <option value="Clube real">Clube real</option>
-                            <option value="Clube fictício">Clube fictício</option>
-                            <option value="Seleção nacional">Seleção nacional</option>
-                        </select>
-
-                        <input id="nomeSave" type="text" placeholder="Nome do save">
-                        <input id="nomeClube" type="text" placeholder="Nome do clube ou seleção">
-                        <input id="treinador" type="text" placeholder="Nome do treinador">
-                        <input id="temporada" type="text" placeholder="Temporada inicial, exemplo: 2026/27">
-                    </div>
-
-                    <div class="form-actions">
-                        <button class="primary-button" onclick="salvarSave()">Salvar save</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="listaSaves" class="cards"></div>
-        </section>
-
-        <section id="telaSave" class="hidden">
-            <div class="header">
-                <button class="secondary-button" onclick="mostrarInicio()">← Voltar aos saves</button>
-                <button class="secondary-button" onclick="editarSaveAtual()">Editar save</button>
-            </div>
-
-            <div class="detail-hero">
-                <h2 id="detalheClube">Nome do clube</h2>
-                <div class="detail-meta">
-                    <span id="detalheTipo"></span>
-                    <span id="detalheSave"></span>
-                    <span id="detalheTemporada"></span>
-                    <span id="detalheTreinador"></span>
-                </div>
-            </div>
-
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <span>Jogadores</span>
-                    <strong id="contadorJogadores">0</strong>
-                </div>
-                <div class="stat-card">
-                    <span>Temporadas</span>
-                    <strong>1</strong>
-                </div>
-                <div class="stat-card">
-                    <span>Títulos</span>
-                    <strong>0</strong>
-                </div>
-                <div class="stat-card">
-                    <span>Partidas</span>
-                    <strong>0</strong>
-                </div>
-            </div>
-
-            <h2 class="section-title">Gerenciar save</h2>
-
-            <div class="feature-grid">
-                <div class="feature-card" onclick="abrirElenco()">
-                    <h3>👥 Elenco</h3>
-                    <p>Cadastre e acompanhe os jogadores.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Temporadas')">
-                    <h3>📅 Temporadas</h3>
-                    <p>Veja o histórico de cada temporada.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Estatísticas')">
-                    <h3>📊 Estatísticas</h3>
-                    <p>Registre gols, assistências, jogos e notas.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Partidas')">
-                    <h3>⚽ Partidas</h3>
-                    <p>Adicione resultados e competições.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Títulos')">
-                    <h3>🏆 Títulos</h3>
-                    <p>Salve todas as conquistas do save.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Transferências')">
-                    <h3>💰 Transferências</h3>
-                    <p>Controle compras, vendas e empréstimos.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Recordes')">
-                    <h3>⭐ Recordes</h3>
-                    <p>Acompanhe os maiores números da carreira.</p>
-                </div>
-
-                <div class="feature-card" onclick="mostrarAviso('Importar print')">
-                    <h3>🖼️ Importar print</h3>
-                    <p>Área preparada para leitura de imagens do FM.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="telaElenco" class="hidden">
-            <div class="header">
-                <div>
-                    <button class="secondary-button" onclick="voltarAoSave()">← Voltar ao save</button>
-                    <h1 style="margin-top: 20px;">Elenco</h1>
-                </div>
-
-                <button class="primary-button" onclick="mostrarFormularioJogador()">
-                    + Adicionar jogador
-                </button>
-            </div>
-
-            <div id="formularioJogador" class="form-area">
-                <div class="form-card">
-                    <h2 id="tituloFormularioJogador">Adicionar jogador</h2>
-
-                    <input id="jogadorId" type="hidden">
-
-                    <div class="form-grid">
-                        <input id="jogadorNome" type="text" placeholder="Nome do jogador">
-                        <input id="jogadorNumero" type="number" min="0" placeholder="Número da camisa">
-
-                        <select id="jogadorPosicao">
-                            <option value="">Posição</option>
-                            <option>Goleiro</option>
-                            <option>Lateral-direito</option>
-                            <option>Lateral-esquerdo</option>
-                            <option>Zagueiro</option>
-                            <option>Volante</option>
-                            <option>Meio-campista</option>
-                            <option>Meia ofensivo</option>
-                            <option>Ponta-direita</option>
-                            <option>Ponta-esquerda</option>
-                            <option>Atacante</option>
-                        </select>
-
-                        <input id="jogadorNacionalidade" type="text" placeholder="Nacionalidade">
-                        <input id="jogadorIdade" type="number" min="0" placeholder="Idade">
-
-                        <select id="jogadorStatus">
-                            <option value="">Status no elenco</option>
-                            <option>Titular</option>
-                            <option>Rotação</option>
-                            <option>Reserva</option>
-                            <option>Promessa</option>
-                            <option>Emprestado</option>
-                            <option>Vendido</option>
-                        </select>
-
-                        <input id="jogadorJogos" type="number" min="0" value="0" placeholder="Jogos">
-                        <input id="jogadorGols" type="number" min="0" value="0" placeholder="Gols">
-                        <input id="jogadorAssistencias" type="number" min="0" value="0" placeholder="Assistências">
-                        <input id="jogadorNota" type="number" min="0" max="10" step="0.01" value="0" placeholder="Nota média">
-                    </div>
-
-                    <div class="form-actions">
-                        <button class="primary-button" onclick="salvarJogador()">Salvar jogador</button>
-                        <button class="secondary-button" onclick="cancelarEdicaoJogador()">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="listaJogadores"></div>
-        </section>
-
-    </main>
-</div>
-
-<script>
-const CHAVE_SAVES = "fmCareerStatsSaves";
-const CHAVE_JOGADORES = "fmCareerStatsJogadores";
-let saveAtualId = null;
-
-function mostrarFormularioSave() {
-    const formulario = document.getElementById("novoSave");
-    formulario.style.display =
-        formulario.style.display === "block" ? "none" : "block";
-}
-
-function obterSaves() {
-    try {
-        const dadosSalvos = localStorage.getItem(CHAVE_SAVES);
-        return dadosSalvos ? JSON.parse(dadosSalvos) : [];
-    } catch (erro) {
-        console.error("Erro ao carregar os saves:", erro);
-        return [];
-    }
-}
-
-function guardarSaves(saves) {
-    localStorage.setItem(CHAVE_SAVES, JSON.stringify(saves));
-}
-
-function obterJogadores() {
-    try {
-        const dadosSalvos = localStorage.getItem(CHAVE_JOGADORES);
-        return dadosSalvos ? JSON.parse(dadosSalvos) : [];
-    } catch (erro) {
-        console.error("Erro ao carregar jogadores:", erro);
-        return [];
-    }
-}
-
-function guardarJogadores(jogadores) {
-    localStorage.setItem(CHAVE_JOGADORES, JSON.stringify(jogadores));
-}
-
-function salvarSave() {
-    const tipoSave = document.getElementById("tipoSave").value;
-    const nomeSave = document.getElementById("nomeSave").value.trim();
-    const nomeClube = document.getElementById("nomeClube").value.trim();
-    const treinador = document.getElementById("treinador").value.trim();
-    const temporada = document.getElementById("temporada").value.trim();
-
-    if (!tipoSave || !nomeSave || !nomeClube || !temporada) {
-        alert("Preencha o tipo de save, o nome do save, o clube ou seleção e a temporada.");
-        return;
-    }
-
-    const novoSave = {
-        id: Date.now(),
-        tipo: tipoSave,
-        nomeSave,
-        clube: nomeClube,
-        treinador,
-        temporada
-    };
-
-    const saves = obterSaves();
-    saves.push(novoSave);
-    guardarSaves(saves);
-
-    limparFormularioSave();
+document.addEventListener("DOMContentLoaded", function () {
     carregarSaves();
-    document.getElementById("novoSave").style.display = "none";
-}
-
-function limparFormularioSave() {
-    document.getElementById("tipoSave").value = "";
-    document.getElementById("nomeSave").value = "";
-    document.getElementById("nomeClube").value = "";
-    document.getElementById("treinador").value = "";
-    document.getElementById("temporada").value = "";
-}
-
-function criarCard(save) {
-    const card = document.createElement("div");
-    card.className = "card save-card";
-
-    card.addEventListener("click", function () {
-        abrirSave(save.id);
-    });
-
-    card.innerHTML = `
-        <h3>${escapeHtml(save.clube)}</h3>
-        <p>Tipo: ${escapeHtml(save.tipo)}</p>
-        <p>Save: ${escapeHtml(save.nomeSave)}</p>
-        <p>Temporada: ${escapeHtml(save.temporada)}</p>
-        ${save.treinador ? `<p>Treinador: ${escapeHtml(save.treinador)}</p>` : ""}
-    `;
-
-    const acoes = document.createElement("div");
-    acoes.className = "card-actions";
-
-    const botaoAbrir = document.createElement("button");
-    botaoAbrir.className = "open-button";
-    botaoAbrir.textContent = "Abrir save";
-    botaoAbrir.onclick = function (evento) {
-        evento.stopPropagation();
-        abrirSave(save.id);
-    };
-
-    const botaoExcluir = document.createElement("button");
-    botaoExcluir.className = "delete-button";
-    botaoExcluir.textContent = "Excluir";
-    botaoExcluir.onclick = function (evento) {
-        evento.stopPropagation();
-        excluirSave(save.id);
-    };
-
-    acoes.appendChild(botaoAbrir);
-    acoes.appendChild(botaoExcluir);
-    card.appendChild(acoes);
-
-    return card;
-}
-
-function carregarSaves() {
-    const lista = document.getElementById("listaSaves");
-    const saves = obterSaves();
-
-    lista.innerHTML = "";
-
-    if (saves.length === 0) {
-        lista.innerHTML = `
-            <div class="card">
-                <h3>Nenhum save criado</h3>
-                <p>Clique em “Criar novo save” para começar sua carreira.</p>
-            </div>
-        `;
-        return;
-    }
-
-    saves.forEach(function (save) {
-        lista.appendChild(criarCard(save));
-    });
-}
-
-function abrirSave(id) {
-    const save = obterSaves().find(function (item) {
-        return item.id === id;
-    });
-
-    if (!save) {
-        alert("Não foi possível encontrar este save.");
-        return;
-    }
-
-    saveAtualId = id;
-
-    document.getElementById("detalheClube").textContent = save.clube;
-    document.getElementById("detalheTipo").textContent = `Tipo: ${save.tipo}`;
-    document.getElementById("detalheSave").textContent = `Save: ${save.nomeSave}`;
-    document.getElementById("detalheTemporada").textContent = `Temporada: ${save.temporada}`;
-    document.getElementById("detalheTreinador").textContent =
-        save.treinador ? `Treinador: ${save.treinador}` : "";
-
-    atualizarContadorJogadores();
-    mostrarTela("telaSave");
-}
-
-function mostrarInicio() {
-    saveAtualId = null;
     mostrarTela("telaInicio");
-    carregarSaves();
-}
-
-function voltarAoSave() {
-    if (!saveAtualId) {
-        mostrarInicio();
-        return;
-    }
-
-    abrirSave(saveAtualId);
-}
-
-function mostrarTela(idTela) {
-    ["telaInicio", "telaSave", "telaElenco"].forEach(function (id) {
-        document.getElementById(id).classList.add("hidden");
-    });
-
-    document.getElementById(idTela).classList.remove("hidden");
-    window.scrollTo(0, 0);
-}
-
-function editarSaveAtual() {
-    if (!saveAtualId) return;
-
-    const saves = obterSaves();
-    const save = saves.find(function (item) {
-        return item.id === saveAtualId;
-    });
-
-    if (!save) return;
-
-    const novoNome = prompt("Nome do save:", save.nomeSave);
-    if (novoNome === null) return;
-
-    const novoTreinador = prompt("Nome do treinador:", save.treinador || "");
-    if (novoTreinador === null) return;
-
-    const novaTemporada = prompt("Temporada atual:", save.temporada);
-    if (novaTemporada === null) return;
-
-    save.nomeSave = novoNome.trim() || save.nomeSave;
-    save.treinador = novoTreinador.trim();
-    save.temporada = novaTemporada.trim() || save.temporada;
-
-    guardarSaves(saves);
-    abrirSave(saveAtualId);
-}
-
-function excluirSave(id) {
-    const confirmar = window.confirm("Tem certeza de que deseja excluir este save e seus jogadores?");
-
-    if (!confirmar) return;
-
-    const savesAtualizados = obterSaves().filter(function (save) {
-        return save.id !== id;
-    });
-
-    const jogadoresAtualizados = obterJogadores().filter(function (jogador) {
-        return jogador.saveId !== id;
-    });
-
-    guardarSaves(savesAtualizados);
-    guardarJogadores(jogadoresAtualizados);
-    carregarSaves();
-}
-
-function abrirElenco() {
-    if (!saveAtualId) {
-        alert("Abra um save primeiro.");
-        return;
-    }
-
-    carregarJogadores();
-    mostrarTela("telaElenco");
-}
-
-function abrirElencoPeloMenu() {
-    if (!saveAtualId) {
-        alert("Abra um save para acessar o elenco.");
-        return;
-    }
-
-    abrirElenco();
-}
-
-function mostrarFormularioJogador() {
-    document.getElementById("formularioJogador").style.display = "block";
-}
-
-function cancelarEdicaoJogador() {
-    limparFormularioJogador();
-    document.getElementById("formularioJogador").style.display = "none";
-}
-
-function salvarJogador() {
-    if (!saveAtualId) {
-        alert("Abra um save primeiro.");
-        return;
-    }
-
-    const idExistente = document.getElementById("jogadorId").value;
-    const nome = document.getElementById("jogadorNome").value.trim();
-    const numero = document.getElementById("jogadorNumero").value;
-    const posicao = document.getElementById("jogadorPosicao").value;
-    const nacionalidade = document.getElementById("jogadorNacionalidade").value.trim();
-    const idade = document.getElementById("jogadorIdade").value;
-    const status = document.getElementById("jogadorStatus").value;
-    const jogos = document.getElementById("jogadorJogos").value;
-    const gols = document.getElementById("jogadorGols").value;
-    const assistencias = document.getElementById("jogadorAssistencias").value;
-    const nota = document.getElementById("jogadorNota").value;
-
-    if (!nome || !posicao || !status) {
-        alert("Preencha pelo menos nome, posição e status do jogador.");
-        return;
-    }
-
-    const jogadores = obterJogadores();
-
-    if (idExistente) {
-        const jogador = jogadores.find(function (item) {
-            return item.id === Number(idExistente);
-        });
-
-        if (jogador) {
-            Object.assign(jogador, {
-                nome,
-                numero: Number(numero || 0),
-                posicao,
-                nacionalidade,
-                idade: Number(idade || 0),
-                status,
-                jogos: Number(jogos || 0),
-                gols: Number(gols || 0),
-                assistencias: Number(assistencias || 0),
-                nota: Number(nota || 0)
-            });
-        }
-    } else {
-        jogadores.push({
-            id: Date.now(),
-            saveId: saveAtualId,
-            nome,
-            numero: Number(numero || 0),
-            posicao,
-            nacionalidade,
-            idade: Number(idade || 0),
-            status,
-            jogos: Number(jogos || 0),
-            gols: Number(gols || 0),
-            assistencias: Number(assistencias || 0),
-            nota: Number(nota || 0)
-        });
-    }
-
-    guardarJogadores(jogadores);
-    limparFormularioJogador();
-    document.getElementById("formularioJogador").style.display = "none";
-    carregarJogadores();
-    atualizarContadorJogadores();
-}
-
-function limparFormularioJogador() {
-    document.getElementById("jogadorId").value = "";
-    document.getElementById("tituloFormularioJogador").textContent = "Adicionar jogador";
-    document.getElementById("jogadorNome").value = "";
-    document.getElementById("jogadorNumero").value = "";
-    document.getElementById("jogadorPosicao").value = "";
-    document.getElementById("jogadorNacionalidade").value = "";
-    document.getElementById("jogadorIdade").value = "";
-    document.getElementById("jogadorStatus").value = "";
-    document.getElementById("jogadorJogos").value = "0";
-    document.getElementById("jogadorGols").value = "0";
-    document.getElementById("jogadorAssistencias").value = "0";
-    document.getElementById("jogadorNota").value = "0";
-}
-
-function carregarJogadores() {
-    const lista = document.getElementById("listaJogadores");
-    const jogadores = obterJogadores().filter(function (jogador) {
-        return jogador.saveId === saveAtualId;
-    });
-
-    if (jogadores.length === 0) {
-        lista.innerHTML = `
-            <div class="empty-state">
-                Nenhum jogador cadastrado. Clique em “Adicionar jogador”.
-            </div>
-        `;
-        return;
-    }
-
-    let linhas = "";
-
-    jogadores.forEach(function (jogador) {
-        linhas += `
-            <tr>
-                <td>${escapeHtml(jogador.nome)}</td>
-                <td>${jogador.numero || "-"}</td>
-                <td>${escapeHtml(jogador.posicao)}</td>
-                <td>${escapeHtml(jogador.nacionalidade || "-")}</td>
-                <td>${jogador.idade || "-"}</td>
-                <td>${escapeHtml(jogador.status)}</td>
-                <td>${jogador.jogos}</td>
-                <td>${jogador.gols}</td>
-                <td>${jogador.assistencias}</td>
-                <td>${Number(jogador.nota).toFixed(2)}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="edit-button" onclick="editarJogador(${jogador.id})">Editar</button>
-                        <button class="delete-button" onclick="excluirJogador(${jogador.id})">Excluir</button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-
-    lista.innerHTML = `
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Jogador</th>
-                        <th>Nº</th>
-                        <th>Posição</th>
-                        <th>Nacionalidade</th>
-                        <th>Idade</th>
-                        <th>Status</th>
-                        <th>Jogos</th>
-                        <th>Gols</th>
-                        <th>Assistências</th>
-                        <th>Nota</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>${linhas}</tbody>
-            </table>
-        </div>
-    `;
-}
-
-function editarJogador(id) {
-    const jogador = obterJogadores().find(function (item) {
-        return item.id === id && item.saveId === saveAtualId;
-    });
-
-    if (!jogador) return;
-
-    document.getElementById("jogadorId").value = jogador.id;
-    document.getElementById("tituloFormularioJogador").textContent = "Editar jogador";
-    document.getElementById("jogadorNome").value = jogador.nome;
-    document.getElementById("jogadorNumero").value = jogador.numero;
-    document.getElementById("jogadorPosicao").value = jogador.posicao;
-    document.getElementById("jogadorNacionalidade").value = jogador.nacionalidade;
-    document.getElementById("jogadorIdade").value = jogador.idade;
-    document.getElementById("jogadorStatus").value = jogador.status;
-    document.getElementById("jogadorJogos").value = jogador.jogos;
-    document.getElementById("jogadorGols").value = jogador.gols;
-    document.getElementById("jogadorAssistencias").value = jogador.assistencias;
-    document.getElementById("jogadorNota").value = jogador.nota;
-
-    document.getElementById("formularioJogador").style.display = "block";
-    window.scrollTo(0, 0);
-}
-
-function excluirJogador(id) {
-    const confirmar = window.confirm("Tem certeza de que deseja excluir este jogador?");
-    if (!confirmar) return;
-
-    const jogadoresAtualizados = obterJogadores().filter(function (jogador) {
-        return jogador.id !== id;
-    });
-
-    guardarJogadores(jogadoresAtualizados);
-    carregarJogadores();
-    atualizarContadorJogadores();
-}
-
-function atualizarContadorJogadores() {
-    const total = obterJogadores().filter(function (jogador) {
-        return jogador.saveId === saveAtualId;
-    }).length;
-
-    document.getElementById("contadorJogadores").textContent = total;
-}
-
-function mostrarAviso(nomeArea) {
-    alert(`A área “${nomeArea}” será criada na próxima etapa.`);
-}
-
-function escapeHtml(valor) {
-    return String(valor ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-document.addEventListener("DOMContentLoaded", carregarSaves);
+});
 </script>
 
 </body>
