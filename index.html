@@ -21,6 +21,9 @@ body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:in
 .table-wrap{overflow-x:auto;background:var(--panel);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:12px 14px;border-bottom:1px solid #26344c;text-align:left}th{background:#18243a}.empty,.notice{background:var(--panel);padding:22px;border-radius:13px;color:var(--muted)}.notice{border-left:4px solid var(--info)}
 .search-results{display:grid;gap:10px;margin-top:12px}.search-item{background:#172238;padding:14px;border-radius:11px;display:flex;justify-content:space-between;gap:10px;align-items:center}.search-item img{width:48px;height:48px;object-fit:contain}
 .player-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.season-box{background:#0c1628;padding:14px;border-radius:11px;margin-top:12px}.season-box h4{margin-bottom:8px}
+.collapse-btn{background:#243147;border:0;color:white;border-radius:8px;padding:8px 11px;font-weight:700}
+.player-history.hidden-history{display:none}
+.player-history{margin-top:13px}
 .review{margin-top:18px}.review pre{white-space:pre-wrap;background:#08111f;padding:14px;border-radius:10px;max-height:350px;overflow:auto}
 @media(max-width:850px){.sidebar{position:static;width:100%}.content,.content.full{margin-left:0;padding:21px}.form-grid{grid-template-columns:1fr}.header,.hero-row{align-items:flex-start;flex-direction:column}}
 </style>
@@ -134,7 +137,80 @@ function fillSeasonSelects(){const a=db().seasons.filter(x=>x.careerId===current
 function openPlayerForm(){$("playerForm").classList.remove("hidden");$("playerFormTitle").textContent="Adicionar jogador";$("pId").value=""}function closePlayerForm(){$("playerForm").classList.add("hidden");["pId","pName","pNumber","pPosition","pNationality","pAge"].forEach(x=>$(x).value="")}
 function savePlayer(){if(!$("pName").value.trim())return alert("Informe o nome.");const D=db(),id=n($("pId").value),data={careerId:currentCareerId,name:$("pName").value.trim(),number:n($("pNumber").value),position:$("pPosition").value.trim(),nationality:$("pNationality").value.trim(),age:n($("pAge").value),status:$("pStatus").value};if(id)Object.assign(D.players.find(x=>x.id===id),data);else D.players.push({id:uid(),...data});saveDB(D);closePlayerForm();renderPlayers()}
 function playerTotals(pid){const a=db().playerStats.filter(x=>x.playerId===pid);return{games:a.reduce((z,x)=>z+n(x.games),0),goals:a.reduce((z,x)=>z+n(x.goals),0),assists:a.reduce((z,x)=>z+n(x.assists),0),rating:a.reduce((z,x)=>z+n(x.rating)*n(x.games),0)/(a.reduce((z,x)=>z+n(x.games),0)||1)}}
-function renderPlayers(){const D=db(),ps=D.players.filter(x=>x.careerId===currentCareerId);$("playersList").innerHTML=ps.length?ps.map(p=>{const T=playerTotals(p.id),rows=D.playerStats.filter(x=>x.playerId===p.id).map(st=>{const s=D.seasons.find(x=>x.id===st.seasonId);return`<tr><td>${esc(s?.name||"-")}</td><td>${st.games}</td><td>${st.goals}</td><td>${st.assists}</td><td>${n(st.rating).toFixed(2)}</td><td><button class="btn warning" onclick="editSeasonStats(${st.id})">Editar</button> <button class="btn danger" onclick="deleteSeasonStats(${st.id})">Excluir</button></td></tr>`}).join("");return`<div class="card" style="margin-bottom:14px"><div class="player-head"><div><h3>${esc(p.name)}</h3><p>${esc(p.position||"-")} • ${esc(p.status)}</p></div><div class="actions"><button class="btn info" onclick="openStatsForm(${p.id})">+ Números da temporada</button><button class="btn warning" onclick="editPlayer(${p.id})">Editar</button><button class="btn danger" onclick="deletePlayer(${p.id})">Excluir</button></div></div><div class="stats"><div class="stat"><span>🏟️ Total jogos</span><strong>${T.games}</strong></div><div class="stat"><span>⚽ Total gols</span><strong>${T.goals}</strong></div><div class="stat"><span>🎯 Total assistências</span><strong>${T.assists}</strong></div><div class="stat"><span>⭐ Nota total</span><strong>${T.rating.toFixed(2)}</strong></div></div><div class="table-wrap"><table><thead><tr><th>Temporada</th><th>Jogos</th><th>Gols</th><th>Assistências</th><th>Nota</th><th>Ações</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sem números cadastrados.</td></tr>'}</tbody></table></div></div>`}).join(""):'<div class="empty">Nenhum jogador.</div>'}
+function togglePlayerHistory(pid){
+  const area=$("playerHistory-"+pid);
+  const button=$("playerHistoryButton-"+pid);
+  if(!area||!button)return;
+  const fechado=area.classList.toggle("hidden-history");
+  button.textContent=fechado?"▶ Mostrar temporadas":"▼ Esconder temporadas";
+}
+function renderPlayers(){
+  const D=db(),ps=D.players.filter(x=>x.careerId===currentCareerId);
+  $("playersList").innerHTML=ps.length?ps.map(p=>{
+    const T=playerTotals(p.id);
+    const rows=D.playerStats.filter(x=>x.playerId===p.id).map(st=>{
+      const s=D.seasons.find(x=>x.id===st.seasonId);
+      return`<tr>
+        <td>${esc(s?.name||"-")}</td>
+        <td>${st.games}</td>
+        <td>${st.goals}</td>
+        <td>${st.assists}</td>
+        <td>${n(st.rating).toFixed(2)}</td>
+        <td>
+          <button class="btn warning" onclick="editSeasonStats(${st.id})">Editar</button>
+          <button class="btn danger" onclick="deleteSeasonStats(${st.id})">Excluir</button>
+        </td>
+      </tr>`
+    }).join("");
+
+    return`<div class="card" style="margin-bottom:14px">
+      <div class="player-head">
+        <div>
+          <h3>${esc(p.name)}</h3>
+          <p>${esc(p.position||"-")} • ${esc(p.status)}</p>
+        </div>
+        <div class="actions">
+          <button class="btn info" onclick="openStatsForm(${p.id})">+ Números da temporada</button>
+          <button class="btn warning" onclick="editPlayer(${p.id})">Editar</button>
+          <button class="btn danger" onclick="deletePlayer(${p.id})">Excluir</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>🏟️ Total jogos</span><strong>${T.games}</strong></div>
+        <div class="stat"><span>⚽ Total gols</span><strong>${T.goals}</strong></div>
+        <div class="stat"><span>🎯 Total assistências</span><strong>${T.assists}</strong></div>
+        <div class="stat"><span>⭐ Nota total</span><strong>${T.rating.toFixed(2)}</strong></div>
+      </div>
+
+      <button
+        id="playerHistoryButton-${p.id}"
+        class="collapse-btn"
+        onclick="togglePlayerHistory(${p.id})"
+      >▶ Mostrar temporadas</button>
+
+      <div id="playerHistory-${p.id}" class="player-history hidden-history">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Temporada</th>
+                <th>Jogos</th>
+                <th>Gols</th>
+                <th>Assistências</th>
+                <th>Nota</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows||'<tr><td colspan="6">Sem números cadastrados.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`
+  }).join(""):'<div class="empty">Nenhum jogador.</div>'
+}
 function editPlayer(id){const p=db().players.find(x=>x.id===id);openPlayerForm();$("playerFormTitle").textContent="Editar jogador";$("pId").value=p.id;$("pName").value=p.name;$("pNumber").value=p.number;$("pPosition").value=p.position;$("pNationality").value=p.nationality;$("pAge").value=p.age;$("pStatus").value=p.status;scrollTo(0,0)}
 function deletePlayer(id){if(!confirm("Excluir jogador e números?"))return;const D=db();D.players=D.players.filter(x=>x.id!==id);D.playerStats=D.playerStats.filter(x=>x.playerId!==id);saveDB(D);renderPlayers()}
 function openStatsForm(pid,stat=null){const D=db(),p=D.players.find(x=>x.id===pid),seasons=D.seasons.filter(x=>x.careerId===currentCareerId);if(!seasons.length)return alert("Crie uma temporada primeiro.");const sid=stat?.seasonId||seasons[0].id,g=prompt(`Temporada: ${seasons.find(x=>x.id===sid)?.name}\nJogos:`,stat?.games??0);if(g===null)return;const goals=prompt("Gols:",stat?.goals??0);if(goals===null)return;const assists=prompt("Assistências:",stat?.assists??0);if(assists===null)return;const rating=prompt("Nota média:",stat?.rating??0);if(rating===null)return;let chosen=sid;if(!stat){const names=seasons.map((s,i)=>`${i+1} - ${s.name}`).join("\n"),choice=prompt("Escolha a temporada pelo número:\n"+names,"1");if(choice===null)return;chosen=seasons[Math.max(0,n(choice)-1)]?.id||seasons[0].id;const existing=D.playerStats.find(x=>x.playerId===pid&&x.seasonId===chosen);if(existing)return openStatsForm(pid,existing)}if(stat)Object.assign(D.playerStats.find(x=>x.id===stat.id),{games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});else D.playerStats.push({id:uid(),careerId:currentCareerId,playerId:pid,seasonId:chosen,games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});saveDB(D);renderPlayers()}
