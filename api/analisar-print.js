@@ -17,116 +17,135 @@ function limparBase64(valor = "") {
 }
 
 function criarInstrucao(tipo, temporada) {
-  const contextoTemporada = temporada
-    ? `A temporada selecionada pelo usuário é "${temporada}".`
-    : "A temporada não foi informada.";
-
-  const instrucoesPorTipo = {
-    elenco: `
-Analise uma tela de elenco do Football Manager.
-Extraia cada jogador visível com nome, número, posição, nacionalidade, idade e status,
-somente quando essas informações estiverem claramente visíveis.
-`,
-
-    estatisticas: `
-Analise uma tabela de estatísticas de jogadores do Football Manager.
-Extraia cada jogador visível com jogos, gols, assistências, nota média, minutos,
-titularidades e outros números que estejam claramente identificados.
-Não troque uma coluna por outra.
-`,
-
-    classificacao: `
-Analise uma tabela de classificação do Football Manager.
-Extraia as equipes e as colunas visíveis, como posição, jogos, vitórias, empates,
-derrotas, gols marcados, gols sofridos, saldo e pontos.
-`,
-
-    resultados: `
-Analise uma tela de resultados ou calendário do Football Manager.
-Extraia data, competição, adversário, local, placar e resultado das partidas visíveis.
-`,
-
-    transferencias: `
-Analise uma tela de transferências do Football Manager.
-Extraia jogador, tipo de transferência, clube de origem, clube de destino, valor,
-data ou temporada, somente quando estiver claramente visível.
-`,
-
-    perfil_jogador: `
-Analise o perfil de um jogador do Football Manager.
-Extraia nome, idade, nacionalidade, posição, clube, número e estatísticas visíveis.
-`,
-
-    outro: `
-Analise a tela do Football Manager e extraia as informações esportivas visíveis
-de forma estruturada.
-`
+  const instrucoes = {
+    elenco: "Extraia os jogadores visíveis com nome, número, posição, nacionalidade, idade e status.",
+    estatisticas: "Extraia os jogadores e as colunas visíveis, principalmente jogos, gols, assistências, minutos, titularidades e nota média.",
+    classificacao: "Extraia posição, equipe, jogos, vitórias, empates, derrotas, gols marcados, gols sofridos, saldo e pontos.",
+    resultados: "Extraia data, competição, adversário, local, placar e resultado das partidas visíveis.",
+    transferencias: "Extraia jogador, tipo, origem, destino, valor, data e temporada.",
+    perfil_jogador: "Extraia nome, idade, nacionalidade, posição, clube, número e estatísticas visíveis.",
+    outro: "Extraia as informações esportivas legíveis da tela."
   };
 
   return `
-Você está analisando um print do Football Manager para o aplicativo FM Career Stats.
+Analise este print do Football Manager para o aplicativo FM Career Stats.
 
-${contextoTemporada}
+Tipo escolhido: ${tipo}
+Temporada escolhida: ${temporada || "não informada"}
 
-Tipo de tela selecionado: ${tipo}.
+${instrucoes[tipo] || instrucoes.outro}
 
-${instrucoesPorTipo[tipo] || instrucoesPorTipo.outro}
+REGRAS:
+- Não invente informações.
+- Quando um texto não estiver legível, use uma string vazia.
+- Quando um número não estiver legível, use 0.
+- Não troque as colunas de jogos, gols, assistências e nota.
+- Preserve os nomes como aparecem no print.
+- Devolva SOMENTE um JSON válido, sem markdown e sem explicações.
 
-REGRAS IMPORTANTES:
-1. Não invente nenhum dado.
-2. Quando não conseguir ler um valor, use null.
-3. Preserve nomes exatamente como aparecem.
-4. Diferencie corretamente jogos, gols, assistências e nota média.
-5. Não misture linhas ou colunas.
-6. Use números sem símbolos quando forem valores numéricos.
-7. Retorne apenas o JSON exigido pelo esquema.
-8. Inclua avisos sobre partes ilegíveis ou duvidosas.
+Formato obrigatório:
+{
+  "tipoDetectado": "",
+  "confiancaGeral": 0,
+  "temporada": "",
+  "jogadores": [
+    {
+      "nome": "",
+      "numero": 0,
+      "posicao": "",
+      "nacionalidade": "",
+      "idade": 0,
+      "status": "",
+      "jogos": 0,
+      "titular": 0,
+      "minutos": 0,
+      "gols": 0,
+      "assistencias": 0,
+      "notaMedia": 0
+    }
+  ],
+  "classificacao": [
+    {
+      "posicao": 0,
+      "equipe": "",
+      "jogos": 0,
+      "vitorias": 0,
+      "empates": 0,
+      "derrotas": 0,
+      "golsMarcados": 0,
+      "golsSofridos": 0,
+      "saldo": 0,
+      "pontos": 0
+    }
+  ],
+  "partidas": [
+    {
+      "data": "",
+      "competicao": "",
+      "adversario": "",
+      "local": "",
+      "golsTime": 0,
+      "golsAdversario": 0,
+      "resultado": ""
+    }
+  ],
+  "transferencias": [
+    {
+      "jogador": "",
+      "tipo": "",
+      "origem": "",
+      "destino": "",
+      "valor": 0,
+      "data": "",
+      "temporada": ""
+    }
+  ],
+  "perfilJogador": {
+    "nome": "",
+    "idade": 0,
+    "nacionalidade": "",
+    "posicao": "",
+    "clube": "",
+    "numero": 0,
+    "jogos": 0,
+    "gols": 0,
+    "assistencias": 0,
+    "notaMedia": 0
+  },
+  "avisos": []
+}
+
+Use listas vazias quando o tipo da tela não possuir aquela categoria.
 `;
 }
 
 const responseSchema = {
   type: "OBJECT",
   properties: {
-    tipoDetectado: {
-      type: "STRING"
-    },
-    confiancaGeral: {
-      type: "NUMBER"
-    },
-    temporada: {
-      type: ["STRING", "NULL"]
-    },
+    tipoDetectado: { type: "STRING" },
+    confiancaGeral: { type: "NUMBER" },
+    temporada: { type: "STRING" },
     jogadores: {
       type: "ARRAY",
       items: {
         type: "OBJECT",
         properties: {
-          nome: { type: ["STRING", "NULL"] },
-          numero: { type: ["INTEGER", "NULL"] },
-          posicao: { type: ["STRING", "NULL"] },
-          nacionalidade: { type: ["STRING", "NULL"] },
-          idade: { type: ["INTEGER", "NULL"] },
-          status: { type: ["STRING", "NULL"] },
-          jogos: { type: ["INTEGER", "NULL"] },
-          titular: { type: ["INTEGER", "NULL"] },
-          minutos: { type: ["INTEGER", "NULL"] },
-          gols: { type: ["INTEGER", "NULL"] },
-          assistencias: { type: ["INTEGER", "NULL"] },
-          notaMedia: { type: ["NUMBER", "NULL"] }
+          nome: { type: "STRING" },
+          numero: { type: "INTEGER" },
+          posicao: { type: "STRING" },
+          nacionalidade: { type: "STRING" },
+          idade: { type: "INTEGER" },
+          status: { type: "STRING" },
+          jogos: { type: "INTEGER" },
+          titular: { type: "INTEGER" },
+          minutos: { type: "INTEGER" },
+          gols: { type: "INTEGER" },
+          assistencias: { type: "INTEGER" },
+          notaMedia: { type: "NUMBER" }
         },
         required: [
-          "nome",
-          "numero",
-          "posicao",
-          "nacionalidade",
-          "idade",
-          "status",
-          "jogos",
-          "titular",
-          "minutos",
-          "gols",
-          "assistencias",
-          "notaMedia"
+          "nome", "numero", "posicao", "nacionalidade", "idade", "status",
+          "jogos", "titular", "minutos", "gols", "assistencias", "notaMedia"
         ]
       }
     },
@@ -135,28 +154,20 @@ const responseSchema = {
       items: {
         type: "OBJECT",
         properties: {
-          posicao: { type: ["INTEGER", "NULL"] },
-          equipe: { type: ["STRING", "NULL"] },
-          jogos: { type: ["INTEGER", "NULL"] },
-          vitorias: { type: ["INTEGER", "NULL"] },
-          empates: { type: ["INTEGER", "NULL"] },
-          derrotas: { type: ["INTEGER", "NULL"] },
-          golsMarcados: { type: ["INTEGER", "NULL"] },
-          golsSofridos: { type: ["INTEGER", "NULL"] },
-          saldo: { type: ["INTEGER", "NULL"] },
-          pontos: { type: ["INTEGER", "NULL"] }
+          posicao: { type: "INTEGER" },
+          equipe: { type: "STRING" },
+          jogos: { type: "INTEGER" },
+          vitorias: { type: "INTEGER" },
+          empates: { type: "INTEGER" },
+          derrotas: { type: "INTEGER" },
+          golsMarcados: { type: "INTEGER" },
+          golsSofridos: { type: "INTEGER" },
+          saldo: { type: "INTEGER" },
+          pontos: { type: "INTEGER" }
         },
         required: [
-          "posicao",
-          "equipe",
-          "jogos",
-          "vitorias",
-          "empates",
-          "derrotas",
-          "golsMarcados",
-          "golsSofridos",
-          "saldo",
-          "pontos"
+          "posicao", "equipe", "jogos", "vitorias", "empates", "derrotas",
+          "golsMarcados", "golsSofridos", "saldo", "pontos"
         ]
       }
     },
@@ -165,22 +176,17 @@ const responseSchema = {
       items: {
         type: "OBJECT",
         properties: {
-          data: { type: ["STRING", "NULL"] },
-          competicao: { type: ["STRING", "NULL"] },
-          adversario: { type: ["STRING", "NULL"] },
-          local: { type: ["STRING", "NULL"] },
-          golsTime: { type: ["INTEGER", "NULL"] },
-          golsAdversario: { type: ["INTEGER", "NULL"] },
-          resultado: { type: ["STRING", "NULL"] }
+          data: { type: "STRING" },
+          competicao: { type: "STRING" },
+          adversario: { type: "STRING" },
+          local: { type: "STRING" },
+          golsTime: { type: "INTEGER" },
+          golsAdversario: { type: "INTEGER" },
+          resultado: { type: "STRING" }
         },
         required: [
-          "data",
-          "competicao",
-          "adversario",
-          "local",
-          "golsTime",
-          "golsAdversario",
-          "resultado"
+          "data", "competicao", "adversario", "local",
+          "golsTime", "golsAdversario", "resultado"
         ]
       }
     },
@@ -189,69 +195,46 @@ const responseSchema = {
       items: {
         type: "OBJECT",
         properties: {
-          jogador: { type: ["STRING", "NULL"] },
-          tipo: { type: ["STRING", "NULL"] },
-          origem: { type: ["STRING", "NULL"] },
-          destino: { type: ["STRING", "NULL"] },
-          valor: { type: ["NUMBER", "NULL"] },
-          data: { type: ["STRING", "NULL"] },
-          temporada: { type: ["STRING", "NULL"] }
+          jogador: { type: "STRING" },
+          tipo: { type: "STRING" },
+          origem: { type: "STRING" },
+          destino: { type: "STRING" },
+          valor: { type: "NUMBER" },
+          data: { type: "STRING" },
+          temporada: { type: "STRING" }
         },
         required: [
-          "jogador",
-          "tipo",
-          "origem",
-          "destino",
-          "valor",
-          "data",
-          "temporada"
+          "jogador", "tipo", "origem", "destino", "valor", "data", "temporada"
         ]
       }
     },
     perfilJogador: {
-      type: ["OBJECT", "NULL"],
+      type: "OBJECT",
       properties: {
-        nome: { type: ["STRING", "NULL"] },
-        idade: { type: ["INTEGER", "NULL"] },
-        nacionalidade: { type: ["STRING", "NULL"] },
-        posicao: { type: ["STRING", "NULL"] },
-        clube: { type: ["STRING", "NULL"] },
-        numero: { type: ["INTEGER", "NULL"] },
-        jogos: { type: ["INTEGER", "NULL"] },
-        gols: { type: ["INTEGER", "NULL"] },
-        assistencias: { type: ["INTEGER", "NULL"] },
-        notaMedia: { type: ["NUMBER", "NULL"] }
+        nome: { type: "STRING" },
+        idade: { type: "INTEGER" },
+        nacionalidade: { type: "STRING" },
+        posicao: { type: "STRING" },
+        clube: { type: "STRING" },
+        numero: { type: "INTEGER" },
+        jogos: { type: "INTEGER" },
+        gols: { type: "INTEGER" },
+        assistencias: { type: "INTEGER" },
+        notaMedia: { type: "NUMBER" }
       },
       required: [
-        "nome",
-        "idade",
-        "nacionalidade",
-        "posicao",
-        "clube",
-        "numero",
-        "jogos",
-        "gols",
-        "assistencias",
-        "notaMedia"
+        "nome", "idade", "nacionalidade", "posicao", "clube",
+        "numero", "jogos", "gols", "assistencias", "notaMedia"
       ]
     },
     avisos: {
       type: "ARRAY",
-      items: {
-        type: "STRING"
-      }
+      items: { type: "STRING" }
     }
   },
   required: [
-    "tipoDetectado",
-    "confiancaGeral",
-    "temporada",
-    "jogadores",
-    "classificacao",
-    "partidas",
-    "transferencias",
-    "perfilJogador",
-    "avisos"
+    "tipoDetectado", "confiancaGeral", "temporada", "jogadores",
+    "classificacao", "partidas", "transferencias", "perfilJogador", "avisos"
   ]
 };
 
@@ -289,7 +272,7 @@ export default async function handler(request, response) {
 
     if (!String(mimeType || "").startsWith("image/")) {
       return response.status(400).json({
-        erro: "O arquivo enviado precisa ser uma imagem."
+        erro: "O arquivo precisa ser uma imagem."
       });
     }
 
@@ -308,9 +291,7 @@ export default async function handler(request, response) {
           {
             role: "user",
             parts: [
-              {
-                text: criarInstrucao(tipoNormalizado, temporada)
-              },
+              { text: criarInstrucao(tipoNormalizado, temporada) },
               {
                 inlineData: {
                   mimeType,
@@ -331,8 +312,7 @@ export default async function handler(request, response) {
     const dados = await resultado.json();
 
     if (!resultado.ok) {
-      console.error("Erro retornado pelo Gemini:", dados);
-
+      console.error("Erro do Gemini:", dados);
       return response.status(resultado.status).json({
         erro:
           dados?.error?.message ||
@@ -347,7 +327,7 @@ export default async function handler(request, response) {
 
     if (!texto) {
       return response.status(502).json({
-        erro: "A IA não retornou dados para esta imagem."
+        erro: "A IA não retornou dados."
       });
     }
 
@@ -356,10 +336,9 @@ export default async function handler(request, response) {
     try {
       analise = JSON.parse(texto);
     } catch (erro) {
-      console.error("JSON inválido retornado pelo Gemini:", texto);
-
+      console.error("Resposta inválida:", texto);
       return response.status(502).json({
-        erro: "A IA retornou um resultado que não pôde ser interpretado."
+        erro: "A resposta da IA não pôde ser interpretada."
       });
     }
 
@@ -368,10 +347,9 @@ export default async function handler(request, response) {
       analise
     });
   } catch (erro) {
-    console.error("Erro em analisar-print:", erro);
-
+    console.error("Erro interno:", erro);
     return response.status(500).json({
-      erro: "Erro interno ao processar a imagem."
+      erro: "Erro interno ao analisar o print."
     });
   }
 }
