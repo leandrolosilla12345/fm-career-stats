@@ -91,7 +91,22 @@ body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:in
 </section>
 
 <section id="stats" class="hidden">
- <div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Todos os números</h1></div></div>
+ <div class="header">
+  <div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Todos os números</h1></div>
+ </div>
+ <div class="panel" style="margin-bottom:16px">
+  <div class="form-grid">
+   <div class="field"><label>Ordenar por</label><select id="rankingOrder" onchange="renderTotals()">
+    <option value="goals">⚽ Mais gols</option><option value="assists">🎯 Mais assistências</option>
+    <option value="games">🏟️ Mais jogos</option><option value="contributions">🔥 Participações em gols</option>
+    <option value="rating">⭐ Maior nota</option><option value="name">🔤 Nome</option>
+   </select></div>
+   <div class="field"><label>Temporada</label><select id="rankingSeason" onchange="renderTotals()"><option value="">Todas as temporadas</option></select></div>
+   <div class="field"><label>Posição</label><select id="rankingPosition" onchange="renderTotals()"><option value="">Todas as posições</option></select></div>
+   <div class="field"><label>Jogadores</label><select id="rankingStatus" onchange="renderTotals()"><option value="all">Todos</option><option value="current">Somente atuais</option></select></div>
+  </div>
+ </div>
+ <div id="rankingLeaders" class="stats"></div>
  <div id="totalRanking"></div>
 </section>
 
@@ -122,7 +137,7 @@ const $=id=>document.getElementById(id),db0=()=>({careers:[],seasons:[],players:
 function db(){try{return JSON.parse(localStorage.getItem(KEY))||db0()}catch{return db0()}}function saveDB(x){localStorage.setItem(KEY,JSON.stringify(x))}function uid(){return Date.now()+Math.floor(Math.random()*10000)}function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function n(v){return Number(v||0)}function toggle(id){$(id).classList.toggle("hidden")}function showOnly(id){SECTIONS.forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");scrollTo(0,0)}function career(){return db().careers.find(x=>x.id===currentCareerId)}
 function goHome(){currentCareerId=null;$("sidebar").classList.add("hidden");$("content").classList.add("full");showOnly("home");renderCareers()}
 function openCareer(id){currentCareerId=id;$("sidebar").classList.remove("hidden");$("content").classList.remove("full");showDashboard()}
-function showSection(id){showOnly(id);fillSeasonSelects();if(id==="players")renderPlayers();if(id==="seasons")renderSeasons();if(id==="stats")renderTotals();if(id==="matches")renderMatches();if(id==="titles")renderTitles();if(id==="transfers")renderTransfers()}
+function showSection(id){showOnly(id);fillSeasonSelects();if(id==="players")renderPlayers();if(id==="seasons")renderSeasons();if(id==="stats"){fillRankingFilters();renderTotals();}if(id==="matches")renderMatches();if(id==="titles")renderTitles();if(id==="transfers")renderTransfers()}
 function showDashboard(){const c=career();if(!c)return goHome();$("miniClub").textContent=c.club;$("miniSeason").textContent=c.season;$("heroClub").textContent=c.club;$("heroMeta").innerHTML=[c.type,"Save: "+c.name,"Temporada: "+c.season,c.coach?"Treinador: "+c.coach:"",c.country||""].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");$("heroImg").innerHTML=c.crest?`<img class="crest" src="${esc(c.crest)}">`:"🛡️";const D=db(),p=D.players.filter(x=>x.careerId===currentCareerId),s=D.seasons.filter(x=>x.careerId===currentCareerId),m=D.matches.filter(x=>x.careerId===currentCareerId),t=D.titles.filter(x=>x.careerId===currentCareerId);$("dashStats").innerHTML=[["Jogadores",p.length],["Temporadas",s.length],["Partidas",m.length],["Títulos",t.length]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");showOnly("dashboard")}
 function careerTypeChanged(){$("clubSearchArea").classList.toggle("hidden",$("cType").value==="Clube fictício")}
 async function searchClub(){const q=$("clubQuery").value.trim();if(q.length<2)return alert("Digite pelo menos 2 letras.");$("clubResults").innerHTML="Pesquisando...";try{const r=await fetch("/api/buscar-clube?nome="+encodeURIComponent(q)),j=await r.json();if(!r.ok)throw Error(j.erro||"Erro");const teams=j.equipes||[];$("clubResults").innerHTML=teams.length?teams.map((x,i)=>`<div class="search-item"><div style="display:flex;gap:10px;align-items:center">${x.escudo?`<img src="${esc(x.escudo)}">`:"🛡️"}<div><strong>${esc(x.nome)}</strong><div class="muted">${esc(x.pais||"")} • ${esc(x.liga||"")}</div></div></div><button class="btn success" onclick='chooseClub(${JSON.stringify(teams[i]).replaceAll("'","&#39;")})'>Selecionar</button></div>`).join(""):'Nenhum resultado.'}catch(e){$("clubResults").innerHTML="Erro: "+esc(e.message)}}
@@ -215,7 +230,30 @@ function editPlayer(id){const p=db().players.find(x=>x.id===id);openPlayerForm()
 function deletePlayer(id){if(!confirm("Excluir jogador e números?"))return;const D=db();D.players=D.players.filter(x=>x.id!==id);D.playerStats=D.playerStats.filter(x=>x.playerId!==id);saveDB(D);renderPlayers()}
 function openStatsForm(pid,stat=null){const D=db(),p=D.players.find(x=>x.id===pid),seasons=D.seasons.filter(x=>x.careerId===currentCareerId);if(!seasons.length)return alert("Crie uma temporada primeiro.");const sid=stat?.seasonId||seasons[0].id,g=prompt(`Temporada: ${seasons.find(x=>x.id===sid)?.name}\nJogos:`,stat?.games??0);if(g===null)return;const goals=prompt("Gols:",stat?.goals??0);if(goals===null)return;const assists=prompt("Assistências:",stat?.assists??0);if(assists===null)return;const rating=prompt("Nota média:",stat?.rating??0);if(rating===null)return;let chosen=sid;if(!stat){const names=seasons.map((s,i)=>`${i+1} - ${s.name}`).join("\n"),choice=prompt("Escolha a temporada pelo número:\n"+names,"1");if(choice===null)return;chosen=seasons[Math.max(0,n(choice)-1)]?.id||seasons[0].id;const existing=D.playerStats.find(x=>x.playerId===pid&&x.seasonId===chosen);if(existing)return openStatsForm(pid,existing)}if(stat)Object.assign(D.playerStats.find(x=>x.id===stat.id),{games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});else D.playerStats.push({id:uid(),careerId:currentCareerId,playerId:pid,seasonId:chosen,games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});saveDB(D);renderPlayers()}
 function editSeasonStats(id){const st=db().playerStats.find(x=>x.id===id);openStatsForm(st.playerId,st)}function deleteSeasonStats(id){const D=db();D.playerStats=D.playerStats.filter(x=>x.id!==id);saveDB(D);renderPlayers()}
-function renderTotals(){const D=db(),ps=D.players.filter(x=>x.careerId===currentCareerId).map(p=>({...p,...playerTotals(p.id)})).sort((a,b)=>b.goals-a.goals);$("totalRanking").innerHTML=ps.length?`<div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th><th>Posição</th><th>Jogos</th><th>Gols</th><th>Assistências</th><th>Nota</th></tr></thead><tbody>${ps.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.position||"-")}</td><td>${p.games}</td><td>${p.goals}</td><td>${p.assists}</td><td>${p.rating.toFixed(2)}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">Sem jogadores.</div>'}
+function fillRankingFilters(){
+  const D=db(),seasons=D.seasons.filter(x=>x.careerId===currentCareerId),players=D.players.filter(x=>x.careerId===currentCareerId);
+  const oldSeason=$("rankingSeason").value;
+  $("rankingSeason").innerHTML='<option value="">Todas as temporadas</option>'+seasons.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("");
+  $("rankingSeason").value=oldSeason;
+  const positions=[...new Set(players.map(p=>p.position).filter(Boolean))].sort(),oldPosition=$("rankingPosition").value;
+  $("rankingPosition").innerHTML='<option value="">Todas as posições</option>'+positions.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("");
+  $("rankingPosition").value=oldPosition;
+}
+function totalsForPlayer(pid,seasonId=""){
+  const a=db().playerStats.filter(x=>x.playerId===pid&&(!seasonId||x.seasonId===Number(seasonId)));
+  const games=a.reduce((z,x)=>z+n(x.games),0),goals=a.reduce((z,x)=>z+n(x.goals),0),assists=a.reduce((z,x)=>z+n(x.assists),0);
+  return{games,goals,assists,contributions:goals+assists,rating:games?a.reduce((z,x)=>z+n(x.rating)*n(x.games),0)/games:0};
+}
+function renderTotals(){
+  const D=db(),order=$("rankingOrder")?.value||"goals",seasonId=$("rankingSeason")?.value||"",position=$("rankingPosition")?.value||"",status=$("rankingStatus")?.value||"all";
+  let ps=D.players.filter(x=>x.careerId===currentCareerId).filter(x=>!position||x.position===position).filter(x=>status!=="current"||!["Vendido","Aposentado","Emprestado"].includes(x.status)).map(p=>({...p,...totalsForPlayer(p.id,seasonId)}));
+  ps.sort((a,b)=>order==="name"?a.name.localeCompare(b.name):n(b[order])-n(a[order])||a.name.localeCompare(b.name));
+  const leader=k=>[...ps].sort((a,b)=>n(b[k])-n(a[k]))[0];
+  const lg=leader("goals"),la=leader("assists"),lj=leader("games"),ln=leader("rating");
+  $("rankingLeaders").innerHTML=[["⚽ Artilheiro",lg?`${lg.name} — ${lg.goals}`:"-"],["🎯 Assistências",la?`${la.name} — ${la.assists}`:"-"],["🏟️ Mais jogos",lj?`${lj.name} — ${lj.games}`:"-"],["⭐ Melhor nota",ln?`${ln.name} — ${ln.rating.toFixed(2)}`:"-"]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${esc(x[1])}</strong></div>`).join("");
+  if(!ps.length){$("totalRanking").innerHTML='<div class="empty">Nenhum jogador encontrado.</div>';return}
+  $("totalRanking").innerHTML=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th><th>Posição</th><th>Status</th><th>🏟️ Jogos</th><th>⚽ Gols</th><th>🎯 Assistências</th><th>🔥 Participações</th><th>⭐ Nota</th></tr></thead><tbody>${ps.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.position||"-")}</td><td>${esc(p.status||"-")}</td><td>${p.games}</td><td>${p.goals}</td><td>${p.assists}</td><td>${p.contributions}</td><td>${p.rating.toFixed(2)}</td></tr>`).join("")}</tbody></table></div>`;
+}
 function saveMatch(){const D=db();D.matches.push({id:uid(),careerId:currentCareerId,seasonId:n($("mSeason").value),opponent:$("mOpponent").value.trim(),competition:$("mCompetition").value.trim(),gf:n($("mGF").value),ga:n($("mGA").value)});saveDB(D);toggle("matchForm");renderMatches()}
 function renderMatches(){const D=db(),a=D.matches.filter(x=>x.careerId===currentCareerId);$("matchList").innerHTML=a.length?`<div class="table-wrap"><table><thead><tr><th>Temporada</th><th>Competição</th><th>Adversário</th><th>Placar</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(D.seasons.find(s=>s.id===x.seasonId)?.name||"-")}</td><td>${esc(x.competition)}</td><td>${esc(x.opponent)}</td><td>${x.gf} x ${x.ga}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">Sem partidas.</div>'}
 function saveTitle(){const D=db();D.titles.push({id:uid(),careerId:currentCareerId,seasonId:n($("tSeason").value),competition:$("tCompetition").value.trim()});saveDB(D);toggle("titleForm");renderTitles()}
