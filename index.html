@@ -353,10 +353,20 @@ td{color:#edf2f7}
 const DB_KEY="fmCareerStatsDB_v1";
 let currentCareerId=null;
 let printDataUrl="";
+const $ = (id) => document.getElementById(id);
 
 function defaultDB(){return{careers:[],players:[],seasons:[],matches:[],titles:[],transfers:[]}}
 function getDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||defaultDB()}catch(e){return defaultDB()}}
-function setDB(db){localStorage.setItem(DB_KEY,JSON.stringify(db))}
+function setDB(db){
+  try{
+    localStorage.setItem(DB_KEY,JSON.stringify(db));
+    return true;
+  }catch(e){
+    console.error("Erro ao salvar:",e);
+    alert("Não foi possível salvar. Se você adicionou um escudo, tente usar uma imagem menor ou salvar sem imagem.");
+    return false;
+  }
+}
 function id(){return Date.now()+Math.floor(Math.random()*1000)}
 function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 function num(v){return Number(v||0)}
@@ -366,26 +376,26 @@ function showOnly(name){allSections().forEach(x=>document.getElementById(x).clas
 function currentCareer(){return getDB().careers.find(x=>x.id===currentCareerId)}
 
 function goHome(){
-  currentCareerId=null;document.getElementById("sidebar").classList.add("hidden");
-  document.getElementById("content").classList.add("full");document.getElementById("app").classList.remove("save-open");
+  currentCareerId=null;$("sidebar").classList.add("hidden");
+  $("content").classList.add("full");$("app").classList.remove("save-open");
   showOnly("home");renderCareers()
 }
 function openCareer(cid){
-  currentCareerId=cid;document.getElementById("sidebar").classList.remove("hidden");
-  document.getElementById("content").classList.remove("full");document.getElementById("app").classList.add("save-open");
+  currentCareerId=cid;$("sidebar").classList.remove("hidden");
+  $("content").classList.remove("full");$("app").classList.add("save-open");
   showSaveDashboard()
 }
 function showSaveDashboard(){
   const c=currentCareer();if(!c){goHome();return}
-  document.getElementById("miniClub").textContent=c.club;document.getElementById("miniSeason").textContent=c.season;
-  document.getElementById("heroClub").textContent=c.club;
-  document.getElementById("heroType").textContent="Tipo: "+c.type;
-  document.getElementById("heroSave").textContent="Save: "+c.name;
-  document.getElementById("heroSeason").textContent="Temporada: "+c.season;
-  document.getElementById("heroCoach").textContent=c.coach?"Treinador: "+c.coach:"";
-  document.getElementById("heroCountry").textContent=c.country?"País: "+c.country:"";
+  $("miniClub").textContent=c.club;$("miniSeason").textContent=c.season;
+  $("heroClub").textContent=c.club;
+  $("heroType").textContent="Tipo: "+c.type;
+  $("heroSave").textContent="Save: "+c.name;
+  $("heroSeason").textContent="Temporada: "+c.season;
+  $("heroCoach").textContent=c.coach?"Treinador: "+c.coach:"";
+  $("heroCountry").textContent=c.country?"País: "+c.country:"";
   const src=c.crest||"";
-  document.getElementById("heroCrestWrap").innerHTML=src?`<img class="crest" src="${esc(src)}">`:`<div class="crest crest-placeholder">🛡️</div>`;
+  $("heroCrestWrap").innerHTML=src?`<img class="crest" src="${esc(src)}">`:`<div class="crest crest-placeholder">🛡️</div>`;
   renderDashboardStats();showOnly("dashboard")
 }
 function showSection(name){
@@ -402,16 +412,53 @@ function showSection(name){
 
 async function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 async function saveNewCareer(){
-  const type=saveType.value,name=saveName.value.trim(),club=saveClub.value.trim(),coach=saveCoach.value.trim(),season=saveSeason.value.trim(),country=saveCountry.value.trim();
-  if(!type||!name||!club||!season){alert("Preencha tipo, nome do save, clube/seleção e temporada.");return}
-  let crest=saveCrestUrl.value.trim();
-  if(saveCrest.files[0]) crest=await fileToDataURL(saveCrest.files[0]);
-  const db=getDB();db.careers.push({id:id(),type,name,club,coach,season,country,crest});setDB(db);
-  ["saveType","saveName","saveClub","saveCoach","saveSeason","saveCountry","saveCrestUrl"].forEach(x=>document.getElementById(x).value="");saveCrest.value="";
-  toggle("saveForm");renderCareers()
+  const type=$("saveType").value;
+  const name=$("saveName").value.trim();
+  const club=$("saveClub").value.trim();
+  const coach=$("saveCoach").value.trim();
+  const season=$("saveSeason").value.trim();
+  const country=$("saveCountry").value.trim();
+
+  if(!type||!name||!club||!season){
+    alert("Preencha tipo, nome do save, clube ou seleção e temporada.");
+    return;
+  }
+
+  let crest=$("saveCrestUrl").value.trim();
+  const imageFile=$("saveCrest").files[0];
+
+  if(imageFile){
+    if(imageFile.size > 900000){
+      alert("O escudo é muito grande. Escolha uma imagem com menos de 900 KB ou deixe o escudo para depois.");
+      return;
+    }
+    crest=await fileToDataURL(imageFile);
+  }
+
+  const db=getDB();
+  db.careers.push({
+    id:id(),
+    type,
+    name,
+    club,
+    coach,
+    season,
+    country,
+    crest
+  });
+
+  if(!setDB(db)) return;
+
+  ["saveType","saveName","saveClub","saveCoach","saveSeason","saveCountry","saveCrestUrl"].forEach(fieldId=>{
+    $(fieldId).value="";
+  });
+  $("saveCrest").value="";
+  $("saveForm").classList.add("hidden");
+  renderCareers();
+  alert("Save criado com sucesso!");
 }
 function renderCareers(){
-  const db=getDB(),wrap=careerCards;wrap.innerHTML="";
+  const db=getDB(),wrap=$("careerCards");wrap.innerHTML="";
   if(!db.careers.length){wrap.innerHTML='<div class="card"><h3>Nenhum save criado</h3><p>Clique em “Criar novo save”.</p></div>';return}
   db.careers.forEach(c=>{
     const el=document.createElement("div");el.className="card clickable";
