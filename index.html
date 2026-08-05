@@ -2,608 +2,155 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FM Career Stats</title>
 <style>
-:root{
-  --bg:#07101f;--panel:#111a2b;--panel2:#172238;--line:#2b3953;--text:#f8fafc;
-  --muted:#9fb0c8;--primary:#7c3aed;--primary2:#6d28d9;--danger:#dc2626;
-  --warning:#d97706;--info:#2563eb;--success:#16a34a
-}
+:root{--bg:#07101f;--panel:#111a2b;--panel2:#172238;--line:#2b3953;--text:#f8fafc;--muted:#9fb0c8;--primary:#7c3aed;--danger:#dc2626;--warning:#d97706;--info:#2563eb;--success:#16a34a}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
-body{background:var(--bg);color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.app{min-height:100vh}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#101827;padding:24px 18px;overflow-y:auto;z-index:10}
-.logo{font-size:25px;font-weight:800;line-height:1.2;margin-bottom:28px}
-.club-mini{background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:14px;margin-bottom:18px}
-.club-mini strong{display:block;margin-bottom:4px}
-.club-mini span{color:var(--muted);font-size:13px}
-.menu{display:flex;flex-direction:column;gap:10px}
-.menu button{border:0;background:#1e293b;color:white;padding:13px;border-radius:10px;text-align:left}
-.menu button:hover,.menu button.active{background:#334155}
-.content{padding:34px;margin-left:240px;min-height:100vh}
-.content.full{margin-left:0;padding:40px 5vw}
-.home-brand{margin-bottom:28px}
-.home-logo{font-size:36px;font-weight:900;margin-bottom:8px}
-.home-brand p{color:var(--muted)}
-.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
-.header h1{font-size:32px}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
-.btn{border:0;color:white;padding:11px 16px;border-radius:10px;font-weight:700}
-.btn-primary{background:var(--primary)}
-.btn-primary:hover{background:var(--primary2)}
-.btn-secondary{background:#243147}
-.btn-info{background:var(--info)}
-.btn-warning{background:var(--warning)}
-.btn-danger{background:var(--danger)}
-.btn-success{background:var(--success)}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{background:var(--panel);border:1px solid transparent;padding:22px;border-radius:16px}
-.card.clickable{cursor:pointer;transition:.15s}
-.card.clickable:hover{transform:translateY(-2px);border-color:#495a79;background:#152038}
-.card h3{margin-bottom:9px}
-.card p{color:var(--muted);margin-top:6px}
-.card-actions{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
-.hero{background:linear-gradient(135deg,#111827,#231d56);padding:28px;border-radius:18px;margin-bottom:22px}
-.hero-row{display:flex;align-items:center;gap:20px}
-.crest{width:86px;height:86px;border-radius:16px;background:#0b1324;border:1px solid var(--line);object-fit:contain;padding:7px}
-.crest-placeholder{display:flex;align-items:center;justify-content:center;font-size:36px}
-.hero h2{font-size:32px;margin-bottom:8px}
-.meta{display:flex;gap:14px;flex-wrap:wrap;color:#cbd5e1}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
-.stat{background:var(--panel);padding:18px;border-radius:14px}
-.stat span{font-size:13px;color:var(--muted)}
-.stat strong{display:block;font-size:25px;margin-top:7px}
-.section-title{margin:26px 0 14px}
-.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-.feature{background:var(--panel);padding:20px;border-radius:14px;cursor:pointer}
-.feature:hover{background:var(--panel2)}
-.feature p{color:var(--muted);margin-top:7px}
-.form-panel{background:var(--panel);padding:22px;border-radius:16px;margin-bottom:22px;max-width:1000px}
-.form-panel h2{margin-bottom:18px}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.field{display:flex;flex-direction:column;gap:7px}
-.field.full{grid-column:1/-1}
-.field label{color:#dbe5f5;font-weight:700;font-size:14px}
-.field input,.field select,.field textarea{width:100%;background:#0d1729;color:white;border:1px solid var(--line);border-radius:10px;padding:12px;outline:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
-.field textarea{min-height:90px;resize:vertical}
-.form-actions{display:flex;gap:10px;margin-top:17px;flex-wrap:wrap}
-.table-wrap{overflow-x:auto;background:var(--panel);border-radius:14px}
-table{width:100%;border-collapse:collapse;min-width:900px}
-th,td{padding:13px 15px;text-align:left;border-bottom:1px solid #26344c}
-th{background:#18243a;color:#dbe5f5}
-td{color:#edf2f7}
-.empty{background:var(--panel);padding:26px;border-radius:14px;color:var(--muted)}
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.filters input,.filters select{background:#0d1729;color:white;border:1px solid var(--line);padding:10px;border-radius:9px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#25334c;font-size:12px}
-.list{display:flex;flex-direction:column;gap:12px}
-.list-item{background:var(--panel);padding:18px;border-radius:14px;display:flex;justify-content:space-between;gap:14px;align-items:center}
-.list-item small{color:var(--muted)}
-.record-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.record{background:var(--panel);padding:18px;border-radius:14px}
-.record span{color:var(--muted);font-size:13px}
-.record strong{display:block;margin-top:7px;font-size:19px}
-.preview-img{max-width:120px;max-height:120px;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:#0b1324}
-.notice{background:#12203a;border-left:4px solid var(--info);padding:16px;border-radius:10px;color:#dce8fa}
-@media(max-width:850px){
- .sidebar{position:static;width:100%;height:auto}
- .content{margin-left:0;padding:22px}
- .content.full{padding:25px}
- .app.save-open{display:block}
- .form-grid{grid-template-columns:1fr}
- .header{align-items:flex-start;flex-direction:column}
- .hero-row{align-items:flex-start;flex-direction:column}
-}
+body{background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.sidebar{position:fixed;inset:0 auto 0 0;width:240px;background:#101827;padding:22px 17px;overflow-y:auto}.logo{font-size:25px;font-weight:800;margin-bottom:24px}.mini{background:var(--panel);padding:13px;border-radius:13px;margin-bottom:16px}.mini span{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+.menu{display:flex;flex-direction:column;gap:9px}.menu button{border:0;background:#1e293b;color:#fff;padding:12px;border-radius:9px;text-align:left}.menu button:hover{background:#334155}
+.content{margin-left:240px;padding:32px;min-height:100vh}.content.full{margin-left:0;padding:38px 5vw}.home-logo{font-size:36px;font-weight:900;margin-bottom:7px}.muted{color:var(--muted)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:23px 0}.actions,.form-actions,.card-actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:0;color:white;padding:10px 14px;border-radius:9px;font-weight:700}.primary{background:var(--primary)}.secondary{background:#243147}.danger{background:var(--danger)}.warning{background:var(--warning)}.info{background:var(--info)}.success{background:var(--success)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px}.card,.panel{background:var(--panel);padding:21px;border-radius:15px}.click{cursor:pointer}.click:hover{background:var(--panel2)}.card p{color:var(--muted);margin-top:6px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-weight:700;font-size:14px}.field input,.field select,.field textarea{background:#0d1729;color:#fff;border:1px solid var(--line);border-radius:9px;padding:11px;outline:none}.field textarea{min-height:88px}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.hero{background:linear-gradient(135deg,#111827,#231d56);padding:27px;border-radius:17px}.hero h1{font-size:31px}.meta{display:flex;gap:13px;flex-wrap:wrap;color:#cbd5e1;margin-top:8px}.crest{width:82px;height:82px;object-fit:contain;background:#08111f;border-radius:13px;padding:6px}.hero-row{display:flex;gap:18px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px;margin:18px 0}.stat{background:var(--panel);padding:17px;border-radius:13px}.stat span{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:24px;margin-top:6px}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}.feature{background:var(--panel);padding:19px;border-radius:13px;cursor:pointer}.feature:hover{background:var(--panel2)}.feature p{color:var(--muted);margin-top:6px}
+.table-wrap{overflow-x:auto;background:var(--panel);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:12px 14px;border-bottom:1px solid #26344c;text-align:left}th{background:#18243a}.empty,.notice{background:var(--panel);padding:22px;border-radius:13px;color:var(--muted)}.notice{border-left:4px solid var(--info)}
+.search-results{display:grid;gap:10px;margin-top:12px}.search-item{background:#172238;padding:14px;border-radius:11px;display:flex;justify-content:space-between;gap:10px;align-items:center}.search-item img{width:48px;height:48px;object-fit:contain}
+.player-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.season-box{background:#0c1628;padding:14px;border-radius:11px;margin-top:12px}.season-box h4{margin-bottom:8px}
+.review{margin-top:18px}.review pre{white-space:pre-wrap;background:#08111f;padding:14px;border-radius:10px;max-height:350px;overflow:auto}
+@media(max-width:850px){.sidebar{position:static;width:100%}.content,.content.full{margin-left:0;padding:21px}.form-grid{grid-template-columns:1fr}.header,.hero-row{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
-<div class="app" id="app">
-  <aside class="sidebar hidden" id="sidebar">
-    <div class="logo">⚽ FM Career Stats</div>
-    <div class="club-mini">
-      <strong id="miniClub">Save</strong>
-      <span id="miniSeason">Temporada</span>
-    </div>
-    <nav class="menu">
-      <button onclick="showSaveDashboard()">🏠 Visão geral</button>
-      <button onclick="showSection('players')">👥 Elenco</button>
-      <button onclick="showSection('seasons')">📅 Temporadas</button>
-      <button onclick="showSection('stats')">📊 Estatísticas</button>
-      <button onclick="showSection('matches')">⚽ Partidas</button>
-      <button onclick="showSection('titles')">🏆 Títulos</button>
-      <button onclick="showSection('transfers')">💰 Transferências</button>
-      <button onclick="showSection('records')">⭐ Recordes</button>
-      <button onclick="showSection('backup')">💾 Backup</button>
-      <button onclick="showSection('prints')">🖼️ Importar print</button>
-      <button onclick="goHome()">↩️ Sair do save</button>
-    </nav>
-  </aside>
+<aside id="sidebar" class="sidebar hidden">
+ <div class="logo">⚽ FM Career Stats</div><div class="mini"><strong id="miniClub"></strong><span id="miniSeason"></span></div>
+ <nav class="menu">
+  <button onclick="showDashboard()">🏠 Visão geral</button><button onclick="showSection('players')">👥 Jogadores</button>
+  <button onclick="showSection('seasons')">📅 Temporadas</button><button onclick="showSection('stats')">📊 Todos os números</button>
+  <button onclick="showSection('matches')">⚽ Partidas</button><button onclick="showSection('titles')">🏆 Títulos</button>
+  <button onclick="showSection('transfers')">💰 Transferências</button><button onclick="showSection('ai')">🤖 Importar print</button>
+  <button onclick="showSection('backup')">💾 Backup</button><button onclick="goHome()">↩️ Sair do save</button>
+ </nav>
+</aside>
+<main id="content" class="content full">
 
-  <main class="content full" id="content">
+<section id="home">
+ <div class="home-logo">⚽ FM Career Stats</div><p class="muted">Salve suas carreiras, temporadas e números dos jogadores.</p>
+ <div class="header"><h1>Meus saves</h1><button class="btn primary" onclick="toggle('careerForm')">+ Criar save</button></div>
+ <div id="careerForm" class="panel hidden">
+  <h2 style="margin-bottom:16px">Criar novo save</h2>
+  <div class="form-grid">
+   <div class="field"><label>Tipo</label><select id="cType" onchange="careerTypeChanged()"><option value="">Escolha</option><option>Clube real</option><option>Clube fictício</option><option>Seleção nacional</option></select></div>
+   <div class="field"><label>Nome do save</label><input id="cName"></div>
+   <div class="field full" id="clubSearchArea"><label>Pesquisar clube ou seleção real</label><div class="actions"><input id="clubQuery" style="flex:1" placeholder="Ex.: Borussia Dortmund"><button class="btn info" onclick="searchClub()">🔎 Pesquisar</button></div><div id="clubResults" class="search-results"></div></div>
+   <div class="field"><label>Clube ou seleção</label><input id="cClub"></div><div class="field"><label>Treinador</label><input id="cCoach"></div>
+   <div class="field"><label>Temporada inicial</label><input id="cSeason" placeholder="2026/27"></div><div class="field"><label>País</label><input id="cCountry"></div>
+   <div class="field"><label>Liga</label><input id="cLeague"></div><div class="field"><label>Estádio</label><input id="cStadium"></div>
+   <div class="field full"><label>URL do escudo</label><input id="cCrest"></div>
+  </div><div class="form-actions" style="margin-top:15px"><button class="btn primary" onclick="saveCareer()">Salvar</button><button class="btn secondary" onclick="toggle('careerForm')">Cancelar</button></div>
+ </div>
+ <div id="careerCards" class="cards"></div>
+</section>
 
-    <section id="home">
-      <div class="home-brand">
-        <div class="home-logo">⚽ FM Career Stats</div>
-        <p>Organize vários saves do Football Manager em um só lugar.</p>
-      </div>
-      <div class="header">
-        <h1>Meus saves</h1>
-        <button class="btn btn-primary" onclick="toggle('saveForm')">+ Criar novo save</button>
-      </div>
+<section id="dashboard" class="hidden">
+ <div class="header"><button class="btn secondary" onclick="goHome()">← Voltar</button></div>
+ <div class="hero"><div class="hero-row"><div id="heroImg"></div><div><h1 id="heroClub"></h1><div id="heroMeta" class="meta"></div></div></div></div>
+ <div id="dashStats" class="stats"></div>
+ <h2 style="margin:22px 0 13px">Gerenciar save</h2>
+ <div class="features">
+  <div class="feature" onclick="showSection('players')"><h3>👥 Jogadores</h3><p>Números por temporada e totais.</p></div>
+  <div class="feature" onclick="showSection('seasons')"><h3>📅 Temporadas</h3><p>Crie as temporadas do save.</p></div>
+  <div class="feature" onclick="showSection('stats')"><h3>📊 Todos os números</h3><p>Ranking histórico.</p></div>
+  <div class="feature" onclick="showSection('ai')"><h3>🤖 Importar print</h3><p>Gemini analisa telas do FM.</p></div>
+  <div class="feature" onclick="showSection('matches')"><h3>⚽ Partidas</h3></div><div class="feature" onclick="showSection('titles')"><h3>🏆 Títulos</h3></div>
+  <div class="feature" onclick="showSection('transfers')"><h3>💰 Transferências</h3></div><div class="feature" onclick="showSection('backup')"><h3>💾 Backup</h3></div>
+ </div>
+</section>
 
-      <div class="form-panel hidden" id="saveForm">
-        <h2>Criar novo save</h2>
-        <div class="form-grid">
-          <div class="field"><label>Tipo de save</label>
-            <select id="saveType">
-              <option value="">Escolha</option><option>Clube real</option><option>Clube fictício</option><option>Seleção nacional</option>
-            </select>
-          </div>
-          <div class="field"><label>Nome do save</label><input id="saveName" placeholder="Ex.: Projeto GQA"></div>
-          <div class="field"><label>Clube ou seleção</label><input id="saveClub" placeholder="Ex.: GQA"></div>
-          <div class="field"><label>Treinador</label><input id="saveCoach" placeholder="Nome do treinador"></div>
-          <div class="field"><label>Temporada inicial</label><input id="saveSeason" placeholder="Ex.: 2026/27"></div>
-          <div class="field"><label>País</label><input id="saveCountry" placeholder="Ex.: Brasil"></div>
-          <div class="field"><label>Escudo (arquivo)</label><input id="saveCrest" type="file" accept="image/*"></div>
-          <div class="field"><label>Escudo (URL opcional)</label><input id="saveCrestUrl" placeholder="https://..."></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-primary" onclick="saveNewCareer()">Salvar save</button>
-          <button class="btn btn-secondary" onclick="toggle('saveForm')">Cancelar</button>
-        </div>
-      </div>
+<section id="seasons" class="hidden">
+ <div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Temporadas</h1></div><button class="btn primary" onclick="toggle('seasonForm')">+ Nova temporada</button></div>
+ <div id="seasonForm" class="panel hidden"><div class="form-grid"><div class="field"><label>Temporada</label><input id="sName" placeholder="2026/27"></div><div class="field"><label>Observação</label><input id="sNote"></div></div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="saveSeason()">Salvar</button></div></div>
+ <div id="seasonCards" class="cards"></div>
+</section>
 
-      <div class="cards" id="careerCards"></div>
-    </section>
+<section id="players" class="hidden">
+ <div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Jogadores</h1></div><button class="btn primary" onclick="openPlayerForm()">+ Jogador</button></div>
+ <div id="playerForm" class="panel hidden"><h2 id="playerFormTitle">Adicionar jogador</h2><input id="pId" type="hidden"><div class="form-grid" style="margin-top:14px">
+  <div class="field"><label>Nome</label><input id="pName"></div><div class="field"><label>Número</label><input id="pNumber" type="number"></div>
+  <div class="field"><label>Posição</label><input id="pPosition"></div><div class="field"><label>Nacionalidade</label><input id="pNationality"></div>
+  <div class="field"><label>Idade</label><input id="pAge" type="number"></div><div class="field"><label>Status</label><select id="pStatus"><option>Titular</option><option>Rotação</option><option>Reserva</option><option>Promessa</option><option>Emprestado</option><option>Vendido</option></select></div>
+ </div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="savePlayer()">Salvar</button><button class="btn secondary" onclick="closePlayerForm()">Cancelar</button></div></div>
+ <div id="playersList"></div>
+</section>
 
-    <section id="dashboard" class="hidden">
-      <div class="header">
-        <button class="btn btn-secondary" onclick="goHome()">← Voltar aos saves</button>
-        <div class="actions">
-          <button class="btn btn-secondary" onclick="editCurrentCareer()">Editar save</button>
-        </div>
-      </div>
-      <div class="hero">
-        <div class="hero-row">
-          <div id="heroCrestWrap"></div>
-          <div>
-            <h2 id="heroClub"></h2>
-            <div class="meta">
-              <span id="heroType"></span><span id="heroSave"></span><span id="heroSeason"></span>
-              <span id="heroCoach"></span><span id="heroCountry"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="stat-grid" id="dashboardStats"></div>
-      <h2 class="section-title">Gerenciar save</h2>
-      <div class="feature-grid">
-        <div class="feature" onclick="showSection('players')"><h3>👥 Elenco</h3><p>Jogadores e números.</p></div>
-        <div class="feature" onclick="showSection('seasons')"><h3>📅 Temporadas</h3><p>Histórico anual.</p></div>
-        <div class="feature" onclick="showSection('stats')"><h3>📊 Estatísticas</h3><p>Rankings e totais.</p></div>
-        <div class="feature" onclick="showSection('matches')"><h3>⚽ Partidas</h3><p>Resultados do save.</p></div>
-        <div class="feature" onclick="showSection('titles')"><h3>🏆 Títulos</h3><p>Sala de troféus.</p></div>
-        <div class="feature" onclick="showSection('transfers')"><h3>💰 Transferências</h3><p>Compras e vendas.</p></div>
-        <div class="feature" onclick="showSection('records')"><h3>⭐ Recordes</h3><p>Maiores números.</p></div>
-        <div class="feature" onclick="showSection('backup')"><h3>💾 Backup</h3><p>Exportar e importar.</p></div>
-        <div class="feature" onclick="showSection('prints')"><h3>🖼️ Importar print</h3><p>Módulo preparado.</p></div>
-      </div>
-    </section>
+<section id="stats" class="hidden">
+ <div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Todos os números</h1></div></div>
+ <div id="totalRanking"></div>
+</section>
 
-    <section id="players" class="hidden section">
-      <div class="header">
-        <div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Elenco</h1></div>
-        <button class="btn btn-primary" onclick="openPlayerForm()">+ Adicionar jogador</button>
-      </div>
-      <div class="form-panel hidden" id="playerForm">
-        <h2 id="playerFormTitle">Adicionar jogador</h2>
-        <input id="playerId" type="hidden">
-        <div class="form-grid">
-          <div class="field"><label>👤 Nome</label><input id="playerName"></div>
-          <div class="field"><label>🔢 Número</label><input id="playerNumber" type="number" min="0"></div>
-          <div class="field"><label>🥅 Posição</label><select id="playerPosition">
-            <option value="">Escolha</option><option>Goleiro</option><option>Lateral-direito</option><option>Lateral-esquerdo</option>
-            <option>Zagueiro</option><option>Volante</option><option>Meio-campista</option><option>Meia ofensivo</option>
-            <option>Ponta-direita</option><option>Ponta-esquerda</option><option>Atacante</option>
-          </select></div>
-          <div class="field"><label>🌎 Nacionalidade</label><input id="playerNationality"></div>
-          <div class="field"><label>🎂 Idade</label><input id="playerAge" type="number" min="0"></div>
-          <div class="field"><label>📋 Status</label><select id="playerStatus">
-            <option value="">Escolha</option><option>Titular</option><option>Rotação</option><option>Reserva</option><option>Promessa</option>
-            <option>Emprestado</option><option>Vendido</option><option>Aposentado</option>
-          </select></div>
-          <div class="field"><label>🏟️ Jogos</label><input id="playerGames" type="number" min="0" placeholder="0"></div>
-          <div class="field"><label>⚽ Gols</label><input id="playerGoals" type="number" min="0" placeholder="0"></div>
-          <div class="field"><label>🎯 Assistências</label><input id="playerAssists" type="number" min="0" placeholder="0"></div>
-          <div class="field"><label>⭐ Nota média</label><input id="playerRating" type="number" min="0" max="10" step="0.01" placeholder="0"></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary" onclick="savePlayer()">Salvar</button><button class="btn btn-secondary" onclick="closePlayerForm()">Cancelar</button></div>
-      </div>
-      <div class="filters">
-        <input id="playerSearch" placeholder="Pesquisar jogador" oninput="renderPlayers()">
-        <select id="playerFilterPosition" onchange="renderPlayers()"><option value="">Todas as posições</option>
-          <option>Goleiro</option><option>Lateral-direito</option><option>Lateral-esquerdo</option><option>Zagueiro</option><option>Volante</option>
-          <option>Meio-campista</option><option>Meia ofensivo</option><option>Ponta-direita</option><option>Ponta-esquerda</option><option>Atacante</option>
-        </select>
-        <select id="playerSort" onchange="renderPlayers()"><option value="name">Ordenar por nome</option><option value="games">Mais jogos</option><option value="goals">Mais gols</option><option value="assists">Mais assistências</option><option value="rating">Maior nota</option></select>
-      </div>
-      <div id="playersList"></div>
-    </section>
+<section id="matches" class="hidden"><div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Partidas</h1></div><button class="btn primary" onclick="toggle('matchForm')">+ Partida</button></div><div id="matchForm" class="panel hidden"><div class="form-grid">
+ <div class="field"><label>Temporada</label><select id="mSeason"></select></div><div class="field"><label>Adversário</label><input id="mOpponent"></div><div class="field"><label>Competição</label><input id="mCompetition"></div><div class="field"><label>Placar</label><div class="actions"><input id="mGF" type="number" placeholder="Seu time"><input id="mGA" type="number" placeholder="Adversário"></div></div>
+ </div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="saveMatch()">Salvar</button></div></div><div id="matchList"></div></section>
 
-    <section id="seasons" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Temporadas</h1></div><button class="btn btn-primary" onclick="toggle('seasonForm')">+ Nova temporada</button></div>
-      <div class="form-panel hidden" id="seasonForm">
-        <h2>Adicionar temporada</h2>
-        <div class="form-grid">
-          <div class="field"><label>Temporada</label><input id="seasonName" placeholder="2026/27"></div>
-          <div class="field"><label>Divisão</label><input id="seasonDivision"></div>
-          <div class="field"><label>Jogos</label><input id="seasonGames" type="number" min="0"></div>
-          <div class="field"><label>Vitórias</label><input id="seasonWins" type="number" min="0"></div>
-          <div class="field"><label>Empates</label><input id="seasonDraws" type="number" min="0"></div>
-          <div class="field"><label>Derrotas</label><input id="seasonLosses" type="number" min="0"></div>
-          <div class="field"><label>Gols marcados</label><input id="seasonGF" type="number" min="0"></div>
-          <div class="field"><label>Gols sofridos</label><input id="seasonGA" type="number" min="0"></div>
-          <div class="field"><label>Artilheiro</label><input id="seasonTopScorer"></div>
-          <div class="field"><label>Melhor jogador</label><input id="seasonBestPlayer"></div>
-          <div class="field full"><label>Resumo</label><textarea id="seasonSummary"></textarea></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary" onclick="saveSeason()">Salvar</button><button class="btn btn-secondary" onclick="toggle('seasonForm')">Cancelar</button></div>
-      </div>
-      <div class="cards" id="seasonsList"></div>
-    </section>
+<section id="titles" class="hidden"><div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Títulos</h1></div><button class="btn primary" onclick="toggle('titleForm')">+ Título</button></div><div id="titleForm" class="panel hidden"><div class="form-grid"><div class="field"><label>Temporada</label><select id="tSeason"></select></div><div class="field"><label>Competição</label><input id="tCompetition"></div></div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="saveTitle()">Salvar</button></div></div><div id="titleList" class="cards"></div></section>
 
-    <section id="stats" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Estatísticas</h1></div></div>
-      <div class="stat-grid" id="overallStats"></div>
-      <h2 class="section-title">Ranking histórico</h2>
-      <div id="rankingList"></div>
-    </section>
+<section id="transfers" class="hidden"><div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Transferências</h1></div><button class="btn primary" onclick="toggle('transferForm')">+ Transferência</button></div><div id="transferForm" class="panel hidden"><div class="form-grid"><div class="field"><label>Temporada</label><select id="trSeason"></select></div><div class="field"><label>Jogador</label><input id="trPlayer"></div><div class="field"><label>Tipo</label><select id="trType"><option>Contratação</option><option>Venda</option><option>Empréstimo recebido</option><option>Empréstimo enviado</option></select></div><div class="field"><label>Valor</label><input id="trValue" type="number"></div></div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="saveTransfer()">Salvar</button></div></div><div id="transferList"></div></section>
 
-    <section id="matches" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Partidas</h1></div><button class="btn btn-primary" onclick="toggle('matchForm')">+ Adicionar partida</button></div>
-      <div class="form-panel hidden" id="matchForm">
-        <h2>Adicionar partida</h2>
-        <div class="form-grid">
-          <div class="field"><label>Data</label><input id="matchDate" type="date"></div>
-          <div class="field"><label>Temporada</label><input id="matchSeason"></div>
-          <div class="field"><label>Competição</label><input id="matchCompetition"></div>
-          <div class="field"><label>Adversário</label><input id="matchOpponent"></div>
-          <div class="field"><label>Casa ou fora</label><select id="matchVenue"><option>Casa</option><option>Fora</option><option>Neutro</option></select></div>
-          <div class="field"><label>Gols do seu time</label><input id="matchGF" type="number" min="0"></div>
-          <div class="field"><label>Gols do adversário</label><input id="matchGA" type="number" min="0"></div>
-          <div class="field full"><label>Observações</label><textarea id="matchNotes"></textarea></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary" onclick="saveMatch()">Salvar</button><button class="btn btn-secondary" onclick="toggle('matchForm')">Cancelar</button></div>
-      </div>
-      <div id="matchesList"></div>
-    </section>
+<section id="ai" class="hidden">
+ <div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Importar print com IA</h1></div></div>
+ <div class="notice">Escolha o tipo, a temporada e o print. Revise o resultado antes de importar.</div>
+ <div class="panel" style="margin-top:15px"><div class="form-grid">
+  <div class="field"><label>Tipo do print</label><select id="aiType"><option value="elenco">Elenco</option><option value="estatisticas">Estatísticas</option><option value="classificacao">Classificação</option><option value="resultados">Resultados</option><option value="transferencias">Transferências</option><option value="perfil_jogador">Perfil do jogador</option><option value="outro">Outro</option></select></div>
+  <div class="field"><label>Temporada</label><select id="aiSeason"></select></div><div class="field full"><label>Imagem</label><input id="aiFile" type="file" accept="image/*"></div>
+ </div><div class="form-actions" style="margin-top:14px"><button class="btn primary" onclick="analyzePrint()">🤖 Analisar</button></div><p id="aiStatus" class="muted" style="margin-top:12px"></p></div>
+ <div id="aiReview" class="panel review hidden"><h2>Revisão da análise</h2><pre id="aiJson"></pre><div class="form-actions"><button class="btn success" onclick="importAIData()">Confirmar importação</button><button class="btn secondary" onclick="document.getElementById('aiReview').classList.add('hidden')">Cancelar</button></div></div>
+</section>
 
-    <section id="titles" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Títulos</h1></div><button class="btn btn-primary" onclick="toggle('titleForm')">+ Adicionar título</button></div>
-      <div class="form-panel hidden" id="titleForm">
-        <h2>Adicionar título</h2>
-        <div class="form-grid">
-          <div class="field"><label>Competição</label><input id="titleCompetition"></div>
-          <div class="field"><label>Temporada</label><input id="titleSeason"></div>
-          <div class="field"><label>Categoria</label><select id="titleCategory"><option>Nacional</option><option>Continental</option><option>Mundial</option><option>Estadual</option><option>Outro</option></select></div>
-          <div class="field"><label>Adversário da final</label><input id="titleOpponent"></div>
-          <div class="field"><label>Placar da final</label><input id="titleScore"></div>
-          <div class="field full"><label>Observações</label><textarea id="titleNotes"></textarea></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary" onclick="saveTitle()">Salvar</button><button class="btn btn-secondary" onclick="toggle('titleForm')">Cancelar</button></div>
-      </div>
-      <div class="cards" id="titlesList"></div>
-    </section>
-
-    <section id="transfers" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Transferências</h1></div><button class="btn btn-primary" onclick="toggle('transferForm')">+ Adicionar transferência</button></div>
-      <div class="form-panel hidden" id="transferForm">
-        <h2>Adicionar transferência</h2>
-        <div class="form-grid">
-          <div class="field"><label>Jogador</label><input id="transferPlayer"></div>
-          <div class="field"><label>Tipo</label><select id="transferType"><option>Contratação</option><option>Venda</option><option>Empréstimo recebido</option><option>Empréstimo enviado</option><option>Dispensado</option></select></div>
-          <div class="field"><label>Clube de origem</label><input id="transferFrom"></div>
-          <div class="field"><label>Clube de destino</label><input id="transferTo"></div>
-          <div class="field"><label>Valor</label><input id="transferValue" type="number" min="0" step="0.01"></div>
-          <div class="field"><label>Temporada</label><input id="transferSeason"></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary" onclick="saveTransfer()">Salvar</button><button class="btn btn-secondary" onclick="toggle('transferForm')">Cancelar</button></div>
-      </div>
-      <div class="stat-grid" id="transferStats"></div>
-      <div id="transfersList"></div>
-    </section>
-
-    <section id="records" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Recordes</h1></div></div>
-      <div class="record-grid" id="recordsGrid"></div>
-    </section>
-
-    <section id="backup" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Backup</h1></div></div>
-      <div class="form-panel">
-        <h2>Salvar seus dados</h2>
-        <p style="color:var(--muted);margin-bottom:16px">Exporte um arquivo JSON para não perder seus saves.</p>
-        <div class="actions">
-          <button class="btn btn-success" onclick="exportBackup()">Exportar backup</button>
-          <label class="btn btn-info" for="backupFile">Importar backup</label>
-          <input id="backupFile" type="file" accept=".json,application/json" class="hidden" onchange="importBackup(event)">
-        </div>
-      </div>
-    </section>
-
-    <section id="prints" class="hidden section">
-      <div class="header"><div><button class="btn btn-secondary" onclick="showSaveDashboard()">← Voltar</button><h1 style="margin-top:16px">Importar print</h1></div></div>
-      <div class="notice">A leitura automática por IA ainda precisa de uma API segura. Por enquanto, esta área permite selecionar e visualizar o print antes de cadastrar os dados manualmente.</div>
-      <div class="form-panel" style="margin-top:18px">
-        <div class="field"><label>Tipo do print</label><select id="printType"><option>Elenco</option><option>Estatísticas</option><option>Classificação</option><option>Resultados</option><option>Transferências</option><option>Outro</option></select></div>
-        <div class="field" style="margin-top:14px"><label>Imagem</label><input id="printFile" type="file" accept="image/*" onchange="previewPrint(event)"></div>
-        <div style="margin-top:16px"><img id="printPreview" class="preview-img hidden"></div>
-      </div>
-    </section>
-
-  </main>
-</div>
+<section id="backup" class="hidden"><div class="header"><div><button class="btn secondary" onclick="showDashboard()">← Voltar</button><h1 style="margin-top:14px">Backup</h1></div></div><div class="panel"><div class="actions"><button class="btn success" onclick="exportBackup()">Exportar JSON</button><label for="backupFile" class="btn info">Importar JSON</label><input id="backupFile" class="hidden" type="file" accept=".json" onchange="importBackup(event)"></div></div></section>
+</main>
 
 <script>
-const DB_KEY="fmCareerStatsDB_v1";
-let currentCareerId=null;
-let printDataUrl="";
-const $ = (id) => document.getElementById(id);
-
-function defaultDB(){return{careers:[],players:[],seasons:[],matches:[],titles:[],transfers:[]}}
-function getDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||defaultDB()}catch(e){return defaultDB()}}
-function setDB(db){
-  try{
-    localStorage.setItem(DB_KEY,JSON.stringify(db));
-    return true;
-  }catch(e){
-    console.error("Erro ao salvar:",e);
-    alert("Não foi possível salvar. Se você adicionou um escudo, tente usar uma imagem menor ou salvar sem imagem.");
-    return false;
-  }
-}
-function id(){return Date.now()+Math.floor(Math.random()*1000)}
-function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function num(v){return Number(v||0)}
-function toggle(x){document.getElementById(x).classList.toggle("hidden")}
-function allSections(){return["home","dashboard","players","seasons","stats","matches","titles","transfers","records","backup","prints"]}
-function showOnly(name){allSections().forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(name).classList.remove("hidden");window.scrollTo(0,0)}
-function currentCareer(){return getDB().careers.find(x=>x.id===currentCareerId)}
-
-function goHome(){
-  currentCareerId=null;$("sidebar").classList.add("hidden");
-  $("content").classList.add("full");$("app").classList.remove("save-open");
-  showOnly("home");renderCareers()
-}
-function openCareer(cid){
-  currentCareerId=cid;$("sidebar").classList.remove("hidden");
-  $("content").classList.remove("full");$("app").classList.add("save-open");
-  showSaveDashboard()
-}
-function showSaveDashboard(){
-  const c=currentCareer();if(!c){goHome();return}
-  $("miniClub").textContent=c.club;$("miniSeason").textContent=c.season;
-  $("heroClub").textContent=c.club;
-  $("heroType").textContent="Tipo: "+c.type;
-  $("heroSave").textContent="Save: "+c.name;
-  $("heroSeason").textContent="Temporada: "+c.season;
-  $("heroCoach").textContent=c.coach?"Treinador: "+c.coach:"";
-  $("heroCountry").textContent=c.country?"País: "+c.country:"";
-  const src=c.crest||"";
-  $("heroCrestWrap").innerHTML=src?`<img class="crest" src="${esc(src)}">`:`<div class="crest crest-placeholder">🛡️</div>`;
-  renderDashboardStats();showOnly("dashboard")
-}
-function showSection(name){
-  if(!currentCareerId){alert("Abra um save primeiro.");return}
-  showOnly(name);
-  if(name==="players")renderPlayers();
-  if(name==="seasons")renderSeasons();
-  if(name==="stats")renderStats();
-  if(name==="matches")renderMatches();
-  if(name==="titles")renderTitles();
-  if(name==="transfers")renderTransfers();
-  if(name==="records")renderRecords();
-}
-
-async function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
-async function saveNewCareer(){
-  const type=$("saveType").value;
-  const name=$("saveName").value.trim();
-  const club=$("saveClub").value.trim();
-  const coach=$("saveCoach").value.trim();
-  const season=$("saveSeason").value.trim();
-  const country=$("saveCountry").value.trim();
-
-  if(!type||!name||!club||!season){
-    alert("Preencha tipo, nome do save, clube ou seleção e temporada.");
-    return;
-  }
-
-  let crest=$("saveCrestUrl").value.trim();
-  const imageFile=$("saveCrest").files[0];
-
-  if(imageFile){
-    if(imageFile.size > 900000){
-      alert("O escudo é muito grande. Escolha uma imagem com menos de 900 KB ou deixe o escudo para depois.");
-      return;
-    }
-    crest=await fileToDataURL(imageFile);
-  }
-
-  const db=getDB();
-  db.careers.push({
-    id:id(),
-    type,
-    name,
-    club,
-    coach,
-    season,
-    country,
-    crest
-  });
-
-  if(!setDB(db)) return;
-
-  ["saveType","saveName","saveClub","saveCoach","saveSeason","saveCountry","saveCrestUrl"].forEach(fieldId=>{
-    $(fieldId).value="";
-  });
-  $("saveCrest").value="";
-  $("saveForm").classList.add("hidden");
-  renderCareers();
-  alert("Save criado com sucesso!");
-}
-function renderCareers(){
-  const db=getDB(),wrap=$("careerCards");wrap.innerHTML="";
-  if(!db.careers.length){wrap.innerHTML='<div class="card"><h3>Nenhum save criado</h3><p>Clique em “Criar novo save”.</p></div>';return}
-  db.careers.forEach(c=>{
-    const el=document.createElement("div");el.className="card clickable";
-    el.innerHTML=`<h3>${esc(c.club)}</h3><p>${esc(c.type)}</p><p>Save: ${esc(c.name)}</p><p>Temporada: ${esc(c.season)}</p><div class="card-actions"><button class="btn btn-info">Abrir</button><button class="btn btn-danger">Excluir</button></div>`;
-    el.onclick=()=>openCareer(c.id);el.querySelector(".btn-danger").onclick=e=>{e.stopPropagation();deleteCareer(c.id)};wrap.appendChild(el)
-  })
-}
-function deleteCareer(cid){
-  if(!confirm("Excluir este save e todos os dados dele?"))return;
-  const db=getDB();db.careers=db.careers.filter(x=>x.id!==cid);
-  ["players","seasons","matches","titles","transfers"].forEach(k=>db[k]=db[k].filter(x=>x.careerId!==cid));setDB(db);renderCareers()
-}
-function editCurrentCareer(){
-  const db=getDB(),c=db.careers.find(x=>x.id===currentCareerId);if(!c)return;
-  const name=prompt("Nome do save:",c.name);if(name===null)return;
-  const coach=prompt("Treinador:",c.coach||"");if(coach===null)return;
-  const season=prompt("Temporada atual:",c.season);if(season===null)return;
-  c.name=name.trim()||c.name;c.coach=coach.trim();c.season=season.trim()||c.season;setDB(db);showSaveDashboard()
-}
-
-function renderDashboardStats(){
-  const db=getDB(),cid=currentCareerId;
-  const players=db.players.filter(x=>x.careerId===cid),seasons=db.seasons.filter(x=>x.careerId===cid),matches=db.matches.filter(x=>x.careerId===cid),titles=db.titles.filter(x=>x.careerId===cid);
-  const wins=matches.filter(x=>x.gf>x.ga).length,goals=matches.reduce((a,x)=>a+x.gf,0);
-  dashboardStats.innerHTML=[
-    ["Jogadores",players.length],["Temporadas",Math.max(1,seasons.length)],["Títulos",titles.length],["Partidas",matches.length],["Vitórias",wins],["Gols",goals]
-  ].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("")
-}
-
-function openPlayerForm(){playerForm.classList.remove("hidden");playerFormTitle.textContent="Adicionar jogador";playerId.value=""}
-function closePlayerForm(){playerForm.classList.add("hidden");clearPlayerForm()}
-function clearPlayerForm(){["playerId","playerName","playerNumber","playerNationality","playerAge","playerGames","playerGoals","playerAssists","playerRating"].forEach(x=>document.getElementById(x).value="");playerPosition.value="";playerStatus.value=""}
-function savePlayer(){
-  if(!playerName.value.trim()||!playerPosition.value||!playerStatus.value){alert("Preencha nome, posição e status.");return}
-  const db=getDB(),pid=num(playerId.value);
-  const data={careerId:currentCareerId,name:playerName.value.trim(),number:num(playerNumber.value),position:playerPosition.value,nationality:playerNationality.value.trim(),age:num(playerAge.value),status:playerStatus.value,games:num(playerGames.value),goals:num(playerGoals.value),assists:num(playerAssists.value),rating:num(playerRating.value)};
-  if(pid){const p=db.players.find(x=>x.id===pid);Object.assign(p,data)}else db.players.push({id:id(),...data});
-  setDB(db);closePlayerForm();renderPlayers();renderDashboardStats()
-}
-function editPlayer(pid){
-  const p=getDB().players.find(x=>x.id===pid);if(!p)return;openPlayerForm();playerFormTitle.textContent="Editar jogador";playerId.value=p.id;
-  playerName.value=p.name;playerNumber.value=p.number;playerPosition.value=p.position;playerNationality.value=p.nationality;playerAge.value=p.age;
-  playerStatus.value=p.status;playerGames.value=p.games;playerGoals.value=p.goals;playerAssists.value=p.assists;playerRating.value=p.rating;window.scrollTo(0,0)
-}
-function deletePlayer(pid){if(!confirm("Excluir jogador?"))return;const db=getDB();db.players=db.players.filter(x=>x.id!==pid);setDB(db);renderPlayers();renderDashboardStats()}
-function renderPlayers(){
-  let arr=getDB().players.filter(x=>x.careerId===currentCareerId);
-  const q=playerSearch.value.toLowerCase(),pos=playerFilterPosition.value,sort=playerSort.value;
-  arr=arr.filter(x=>x.name.toLowerCase().includes(q)&&(!pos||x.position===pos));
-  arr.sort((a,b)=>sort==="name"?a.name.localeCompare(b.name):num(b[sort])-num(a[sort]));
-  if(!arr.length){playersList.innerHTML='<div class="empty">Nenhum jogador encontrado.</div>';return}
-  playersList.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Jogador</th><th>Nº</th><th>Posição</th><th>Nacionalidade</th><th>Idade</th><th>Status</th><th>🏟️ Jogos</th><th>⚽ Gols</th><th>🎯 Assistências</th><th>⭐ Nota</th><th>Ações</th></tr></thead><tbody>${arr.map(p=>`<tr><td>${esc(p.name)}</td><td>${p.number||"-"}</td><td>${esc(p.position)}</td><td>${esc(p.nationality||"-")}</td><td>${p.age||"-"}</td><td><span class="badge">${esc(p.status)}</span></td><td>${p.games}</td><td>${p.goals}</td><td>${p.assists}</td><td>${num(p.rating).toFixed(2)}</td><td><button class="btn btn-warning" onclick="editPlayer(${p.id})">Editar</button> <button class="btn btn-danger" onclick="deletePlayer(${p.id})">Excluir</button></td></tr>`).join("")}</tbody></table></div>`
-}
-
-function saveSeason(){
-  if(!seasonName.value.trim()){alert("Informe a temporada.");return}
-  const db=getDB();db.seasons.push({id:id(),careerId:currentCareerId,name:seasonName.value.trim(),division:seasonDivision.value.trim(),games:num(seasonGames.value),wins:num(seasonWins.value),draws:num(seasonDraws.value),losses:num(seasonLosses.value),gf:num(seasonGF.value),ga:num(seasonGA.value),topScorer:seasonTopScorer.value.trim(),bestPlayer:seasonBestPlayer.value.trim(),summary:seasonSummary.value.trim()});setDB(db);
-  ["seasonName","seasonDivision","seasonGames","seasonWins","seasonDraws","seasonLosses","seasonGF","seasonGA","seasonTopScorer","seasonBestPlayer","seasonSummary"].forEach(x=>document.getElementById(x).value="");toggle("seasonForm");renderSeasons();renderDashboardStats()
-}
-function deleteSeason(sid){if(!confirm("Excluir temporada?"))return;const db=getDB();db.seasons=db.seasons.filter(x=>x.id!==sid);setDB(db);renderSeasons();renderDashboardStats()}
-function renderSeasons(){
-  const arr=getDB().seasons.filter(x=>x.careerId===currentCareerId);
-  if(!arr.length){seasonsList.innerHTML='<div class="empty">Nenhuma temporada cadastrada.</div>';return}
-  seasonsList.innerHTML=arr.map(s=>{const pts=s.wins*3+s.draws,ap=s.games?((pts/(s.games*3))*100).toFixed(1):"0.0";return`<div class="card"><h3>${esc(s.name)}</h3><p>${esc(s.division||"Divisão não informada")}</p><p>${s.games}J • ${s.wins}V • ${s.draws}E • ${s.losses}D</p><p>Gols: ${s.gf}–${s.ga} | Aproveitamento: ${ap}%</p><p>Artilheiro: ${esc(s.topScorer||"-")}</p><p>Melhor jogador: ${esc(s.bestPlayer||"-")}</p><div class="card-actions"><button class="btn btn-danger" onclick="deleteSeason(${s.id})">Excluir</button></div></div>`}).join("")
-}
-
-function saveMatch(){
-  if(!matchOpponent.value.trim()){alert("Informe o adversário.");return}
-  const db=getDB();db.matches.push({id:id(),careerId:currentCareerId,date:matchDate.value,season:matchSeason.value.trim(),competition:matchCompetition.value.trim(),opponent:matchOpponent.value.trim(),venue:matchVenue.value,gf:num(matchGF.value),ga:num(matchGA.value),notes:matchNotes.value.trim()});setDB(db);
-  ["matchDate","matchSeason","matchCompetition","matchOpponent","matchGF","matchGA","matchNotes"].forEach(x=>document.getElementById(x).value="");toggle("matchForm");renderMatches();renderDashboardStats()
-}
-function deleteMatch(mid){if(!confirm("Excluir partida?"))return;const db=getDB();db.matches=db.matches.filter(x=>x.id!==mid);setDB(db);renderMatches();renderDashboardStats()}
-function renderMatches(){
-  const arr=getDB().matches.filter(x=>x.careerId===currentCareerId).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-  if(!arr.length){matchesList.innerHTML='<div class="empty">Nenhuma partida cadastrada.</div>';return}
-  matchesList.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Data</th><th>Competição</th><th>Adversário</th><th>Local</th><th>Placar</th><th>Resultado</th><th>Ações</th></tr></thead><tbody>${arr.map(m=>{const r=m.gf>m.ga?"Vitória":m.gf<m.ga?"Derrota":"Empate";return`<tr><td>${esc(m.date||"-")}</td><td>${esc(m.competition||"-")}</td><td>${esc(m.opponent)}</td><td>${esc(m.venue)}</td><td>${m.gf} x ${m.ga}</td><td>${r}</td><td><button class="btn btn-danger" onclick="deleteMatch(${m.id})">Excluir</button></td></tr>`}).join("")}</tbody></table></div>`
-}
-
-function saveTitle(){
-  if(!titleCompetition.value.trim()||!titleSeason.value.trim()){alert("Informe competição e temporada.");return}
-  const db=getDB();db.titles.push({id:id(),careerId:currentCareerId,competition:titleCompetition.value.trim(),season:titleSeason.value.trim(),category:titleCategory.value,opponent:titleOpponent.value.trim(),score:titleScore.value.trim(),notes:titleNotes.value.trim()});setDB(db);
-  ["titleCompetition","titleSeason","titleOpponent","titleScore","titleNotes"].forEach(x=>document.getElementById(x).value="");toggle("titleForm");renderTitles();renderDashboardStats()
-}
-function deleteTitle(tid){if(!confirm("Excluir título?"))return;const db=getDB();db.titles=db.titles.filter(x=>x.id!==tid);setDB(db);renderTitles();renderDashboardStats()}
-function renderTitles(){
-  const arr=getDB().titles.filter(x=>x.careerId===currentCareerId);
-  if(!arr.length){titlesList.innerHTML='<div class="empty">Nenhum título cadastrado.</div>';return}
-  titlesList.innerHTML=arr.map(t=>`<div class="card"><h3>🏆 ${esc(t.competition)}</h3><p>Temporada: ${esc(t.season)}</p><p>Categoria: ${esc(t.category)}</p><p>Final: ${esc(t.opponent||"-")} ${esc(t.score||"")}</p><div class="card-actions"><button class="btn btn-danger" onclick="deleteTitle(${t.id})">Excluir</button></div></div>`).join("")
-}
-
-function saveTransfer(){
-  if(!transferPlayer.value.trim()){alert("Informe o jogador.");return}
-  const db=getDB();db.transfers.push({id:id(),careerId:currentCareerId,player:transferPlayer.value.trim(),type:transferType.value,from:transferFrom.value.trim(),to:transferTo.value.trim(),value:num(transferValue.value),season:transferSeason.value.trim()});setDB(db);
-  ["transferPlayer","transferFrom","transferTo","transferValue","transferSeason"].forEach(x=>document.getElementById(x).value="");toggle("transferForm");renderTransfers()
-}
-function deleteTransfer(tid){if(!confirm("Excluir transferência?"))return;const db=getDB();db.transfers=db.transfers.filter(x=>x.id!==tid);setDB(db);renderTransfers()}
-function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v)}
-function renderTransfers(){
-  const arr=getDB().transfers.filter(x=>x.careerId===currentCareerId);
-  const spent=arr.filter(x=>x.type==="Contratação").reduce((a,x)=>a+x.value,0),received=arr.filter(x=>x.type==="Venda").reduce((a,x)=>a+x.value,0);
-  transferStats.innerHTML=[["Total gasto",money(spent)],["Total recebido",money(received)],["Saldo",money(received-spent)]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
-  if(!arr.length){transfersList.innerHTML='<div class="empty">Nenhuma transferência cadastrada.</div>';return}
-  transfersList.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Jogador</th><th>Tipo</th><th>Origem</th><th>Destino</th><th>Valor</th><th>Temporada</th><th>Ações</th></tr></thead><tbody>${arr.map(t=>`<tr><td>${esc(t.player)}</td><td>${esc(t.type)}</td><td>${esc(t.from||"-")}</td><td>${esc(t.to||"-")}</td><td>${money(t.value)}</td><td>${esc(t.season||"-")}</td><td><button class="btn btn-danger" onclick="deleteTransfer(${t.id})">Excluir</button></td></tr>`).join("")}</tbody></table></div>`
-}
-
-function renderStats(){
-  const db=getDB(),ps=db.players.filter(x=>x.careerId===currentCareerId),ms=db.matches.filter(x=>x.careerId===currentCareerId),ts=db.titles.filter(x=>x.careerId===currentCareerId);
-  const totalGames=ms.length,wins=ms.filter(x=>x.gf>x.ga).length,draws=ms.filter(x=>x.gf===x.ga).length,losses=ms.filter(x=>x.gf<x.ga).length,gf=ms.reduce((a,x)=>a+x.gf,0),ga=ms.reduce((a,x)=>a+x.ga,0);
-  overallStats.innerHTML=[["Partidas",totalGames],["Vitórias",wins],["Empates",draws],["Derrotas",losses],["Gols marcados",gf],["Gols sofridos",ga],["Títulos",ts.length]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
-  const rank=[...ps].sort((a,b)=>b.goals-a.goals);
-  if(!rank.length){rankingList.innerHTML='<div class="empty">Cadastre jogadores para gerar o ranking.</div>';return}
-  rankingList.innerHTML=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th><th>Posição</th><th>Jogos</th><th>Gols</th><th>Assistências</th><th>Nota</th></tr></thead><tbody>${rank.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.position)}</td><td>${p.games}</td><td>${p.goals}</td><td>${p.assists}</td><td>${num(p.rating).toFixed(2)}</td></tr>`).join("")}</tbody></table></div>`
-}
-
-function renderRecords(){
-  const db=getDB(),ps=db.players.filter(x=>x.careerId===currentCareerId),ms=db.matches.filter(x=>x.careerId===currentCareerId),tr=db.transfers.filter(x=>x.careerId===currentCareerId);
-  const top=(key)=>[...ps].sort((a,b)=>num(b[key])-num(a[key]))[0];
-  const biggestWin=[...ms].sort((a,b)=>(b.gf-b.ga)-(a.gf-a.ga))[0],biggestLoss=[...ms].sort((a,b)=>(b.ga-b.gf)-(a.ga-a.gf))[0];
-  const buy=[...tr].filter(x=>x.type==="Contratação").sort((a,b)=>b.value-a.value)[0],sale=[...tr].filter(x=>x.type==="Venda").sort((a,b)=>b.value-a.value)[0];
-  const records=[
-    ["Maior artilheiro",top("goals")?`${top("goals").name} — ${top("goals").goals} gols`:"-"],
-    ["Mais assistências",top("assists")?`${top("assists").name} — ${top("assists").assists}`:"-"],
-    ["Mais partidas",top("games")?`${top("games").name} — ${top("games").games}`:"-"],
-    ["Melhor nota",top("rating")?`${top("rating").name} — ${num(top("rating").rating).toFixed(2)}`:"-"],
-    ["Maior vitória",biggestWin&&biggestWin.gf>biggestWin.ga?`${biggestWin.gf} x ${biggestWin.ga} contra ${biggestWin.opponent}`:"-"],
-    ["Maior derrota",biggestLoss&&biggestLoss.ga>biggestLoss.gf?`${biggestLoss.gf} x ${biggestLoss.ga} contra ${biggestLoss.opponent}`:"-"],
-    ["Contratação mais cara",buy?`${buy.player} — ${money(buy.value)}`:"-"],
-    ["Maior venda",sale?`${sale.player} — ${money(sale.value)}`:"-"]
-  ];
-  recordsGrid.innerHTML=records.map(x=>`<div class="record"><span>${x[0]}</span><strong>${esc(x[1])}</strong></div>`).join("")
-}
-
-function exportBackup(){
-  const blob=new Blob([JSON.stringify(getDB(),null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download="fm-career-stats-backup.json";a.click();URL.revokeObjectURL(url)
-}
-function importBackup(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data.careers)throw Error();if(confirm("Substituir todos os dados atuais pelo backup?")){setDB(data);goHome()}}catch{alert("Arquivo de backup inválido.")}};r.readAsText(file)
-}
-function previewPrint(e){
-  const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{printPreview.src=r.result;printPreview.classList.remove("hidden")};r.readAsDataURL(f)
-}
-
-document.addEventListener("DOMContentLoaded",()=>{if(!localStorage.getItem(DB_KEY))setDB(defaultDB());goHome()});
+const KEY="fmCareerStats_v3",SECTIONS=["home","dashboard","seasons","players","stats","matches","titles","transfers","ai","backup"];let currentCareerId=null,currentAI=null;
+const $=id=>document.getElementById(id),db0=()=>({careers:[],seasons:[],players:[],playerStats:[],matches:[],titles:[],transfers:[],classifications:[]});
+function db(){try{return JSON.parse(localStorage.getItem(KEY))||db0()}catch{return db0()}}function saveDB(x){localStorage.setItem(KEY,JSON.stringify(x))}function uid(){return Date.now()+Math.floor(Math.random()*10000)}function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function n(v){return Number(v||0)}function toggle(id){$(id).classList.toggle("hidden")}function showOnly(id){SECTIONS.forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");scrollTo(0,0)}function career(){return db().careers.find(x=>x.id===currentCareerId)}
+function goHome(){currentCareerId=null;$("sidebar").classList.add("hidden");$("content").classList.add("full");showOnly("home");renderCareers()}
+function openCareer(id){currentCareerId=id;$("sidebar").classList.remove("hidden");$("content").classList.remove("full");showDashboard()}
+function showSection(id){showOnly(id);fillSeasonSelects();if(id==="players")renderPlayers();if(id==="seasons")renderSeasons();if(id==="stats")renderTotals();if(id==="matches")renderMatches();if(id==="titles")renderTitles();if(id==="transfers")renderTransfers()}
+function showDashboard(){const c=career();if(!c)return goHome();$("miniClub").textContent=c.club;$("miniSeason").textContent=c.season;$("heroClub").textContent=c.club;$("heroMeta").innerHTML=[c.type,"Save: "+c.name,"Temporada: "+c.season,c.coach?"Treinador: "+c.coach:"",c.country||""].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");$("heroImg").innerHTML=c.crest?`<img class="crest" src="${esc(c.crest)}">`:"🛡️";const D=db(),p=D.players.filter(x=>x.careerId===currentCareerId),s=D.seasons.filter(x=>x.careerId===currentCareerId),m=D.matches.filter(x=>x.careerId===currentCareerId),t=D.titles.filter(x=>x.careerId===currentCareerId);$("dashStats").innerHTML=[["Jogadores",p.length],["Temporadas",s.length],["Partidas",m.length],["Títulos",t.length]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");showOnly("dashboard")}
+function careerTypeChanged(){$("clubSearchArea").classList.toggle("hidden",$("cType").value==="Clube fictício")}
+async function searchClub(){const q=$("clubQuery").value.trim();if(q.length<2)return alert("Digite pelo menos 2 letras.");$("clubResults").innerHTML="Pesquisando...";try{const r=await fetch("/api/buscar-clube?nome="+encodeURIComponent(q)),j=await r.json();if(!r.ok)throw Error(j.erro||"Erro");const teams=j.equipes||[];$("clubResults").innerHTML=teams.length?teams.map((x,i)=>`<div class="search-item"><div style="display:flex;gap:10px;align-items:center">${x.escudo?`<img src="${esc(x.escudo)}">`:"🛡️"}<div><strong>${esc(x.nome)}</strong><div class="muted">${esc(x.pais||"")} • ${esc(x.liga||"")}</div></div></div><button class="btn success" onclick='chooseClub(${JSON.stringify(teams[i]).replaceAll("'","&#39;")})'>Selecionar</button></div>`).join(""):'Nenhum resultado.'}catch(e){$("clubResults").innerHTML="Erro: "+esc(e.message)}}
+function chooseClub(x){$("cClub").value=x.nome||"";$("cCountry").value=x.pais||"";$("cLeague").value=x.liga||"";$("cStadium").value=x.estadio||"";$("cCrest").value=x.escudo||"";$("clubResults").innerHTML=""}
+function saveCareer(){const type=$("cType").value,name=$("cName").value.trim(),club=$("cClub").value.trim(),season=$("cSeason").value.trim();if(!type||!name||!club||!season)return alert("Preencha tipo, nome, clube/seleção e temporada.");const D=db(),cid=uid();D.careers.push({id:cid,type,name,club,coach:$("cCoach").value.trim(),season,country:$("cCountry").value.trim(),league:$("cLeague").value.trim(),stadium:$("cStadium").value.trim(),crest:$("cCrest").value.trim()});D.seasons.push({id:uid(),careerId:cid,name:season,note:"Temporada inicial"});saveDB(D);toggle("careerForm");renderCareers()}
+function renderCareers(){const D=db();$("careerCards").innerHTML=D.careers.length?D.careers.map(c=>`<div class="card click" onclick="openCareer(${c.id})"><h3>${esc(c.club)}</h3><p>${esc(c.type)}</p><p>Save: ${esc(c.name)}</p><p>Temporada: ${esc(c.season)}</p><div class="card-actions"><button class="btn danger" onclick="event.stopPropagation();deleteCareer(${c.id})">Excluir</button></div></div>`).join(""):'<div class="empty">Nenhum save criado.</div>'}
+function deleteCareer(id){if(!confirm("Excluir save e todos os dados?"))return;const D=db();D.careers=D.careers.filter(x=>x.id!==id);["seasons","players","playerStats","matches","titles","transfers","classifications"].forEach(k=>D[k]=D[k].filter(x=>x.careerId!==id));saveDB(D);renderCareers()}
+function saveSeason(){if(!$("sName").value.trim())return alert("Informe a temporada.");const D=db();D.seasons.push({id:uid(),careerId:currentCareerId,name:$("sName").value.trim(),note:$("sNote").value.trim()});saveDB(D);toggle("seasonForm");renderSeasons();fillSeasonSelects()}
+function renderSeasons(){const a=db().seasons.filter(x=>x.careerId===currentCareerId);$("seasonCards").innerHTML=a.length?a.map(s=>`<div class="card"><h3>${esc(s.name)}</h3><p>${esc(s.note||"")}</p><button class="btn danger" onclick="deleteSeason(${s.id})">Excluir</button></div>`).join(""):'<div class="empty">Nenhuma temporada.</div>'}
+function deleteSeason(id){const D=db();if(D.playerStats.some(x=>x.seasonId===id))return alert("Essa temporada possui números de jogadores. Apague esses números primeiro.");D.seasons=D.seasons.filter(x=>x.id!==id);saveDB(D);renderSeasons();fillSeasonSelects()}
+function fillSeasonSelects(){const a=db().seasons.filter(x=>x.careerId===currentCareerId),html=a.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("");["mSeason","tSeason","trSeason","aiSeason"].forEach(id=>$(id).innerHTML=html)}
+function openPlayerForm(){$("playerForm").classList.remove("hidden");$("playerFormTitle").textContent="Adicionar jogador";$("pId").value=""}function closePlayerForm(){$("playerForm").classList.add("hidden");["pId","pName","pNumber","pPosition","pNationality","pAge"].forEach(x=>$(x).value="")}
+function savePlayer(){if(!$("pName").value.trim())return alert("Informe o nome.");const D=db(),id=n($("pId").value),data={careerId:currentCareerId,name:$("pName").value.trim(),number:n($("pNumber").value),position:$("pPosition").value.trim(),nationality:$("pNationality").value.trim(),age:n($("pAge").value),status:$("pStatus").value};if(id)Object.assign(D.players.find(x=>x.id===id),data);else D.players.push({id:uid(),...data});saveDB(D);closePlayerForm();renderPlayers()}
+function playerTotals(pid){const a=db().playerStats.filter(x=>x.playerId===pid);return{games:a.reduce((z,x)=>z+n(x.games),0),goals:a.reduce((z,x)=>z+n(x.goals),0),assists:a.reduce((z,x)=>z+n(x.assists),0),rating:a.reduce((z,x)=>z+n(x.rating)*n(x.games),0)/(a.reduce((z,x)=>z+n(x.games),0)||1)}}
+function renderPlayers(){const D=db(),ps=D.players.filter(x=>x.careerId===currentCareerId);$("playersList").innerHTML=ps.length?ps.map(p=>{const T=playerTotals(p.id),rows=D.playerStats.filter(x=>x.playerId===p.id).map(st=>{const s=D.seasons.find(x=>x.id===st.seasonId);return`<tr><td>${esc(s?.name||"-")}</td><td>${st.games}</td><td>${st.goals}</td><td>${st.assists}</td><td>${n(st.rating).toFixed(2)}</td><td><button class="btn warning" onclick="editSeasonStats(${st.id})">Editar</button> <button class="btn danger" onclick="deleteSeasonStats(${st.id})">Excluir</button></td></tr>`}).join("");return`<div class="card" style="margin-bottom:14px"><div class="player-head"><div><h3>${esc(p.name)}</h3><p>${esc(p.position||"-")} • ${esc(p.status)}</p></div><div class="actions"><button class="btn info" onclick="openStatsForm(${p.id})">+ Números da temporada</button><button class="btn warning" onclick="editPlayer(${p.id})">Editar</button><button class="btn danger" onclick="deletePlayer(${p.id})">Excluir</button></div></div><div class="stats"><div class="stat"><span>🏟️ Total jogos</span><strong>${T.games}</strong></div><div class="stat"><span>⚽ Total gols</span><strong>${T.goals}</strong></div><div class="stat"><span>🎯 Total assistências</span><strong>${T.assists}</strong></div><div class="stat"><span>⭐ Nota total</span><strong>${T.rating.toFixed(2)}</strong></div></div><div class="table-wrap"><table><thead><tr><th>Temporada</th><th>Jogos</th><th>Gols</th><th>Assistências</th><th>Nota</th><th>Ações</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sem números cadastrados.</td></tr>'}</tbody></table></div></div>`}).join(""):'<div class="empty">Nenhum jogador.</div>'}
+function editPlayer(id){const p=db().players.find(x=>x.id===id);openPlayerForm();$("playerFormTitle").textContent="Editar jogador";$("pId").value=p.id;$("pName").value=p.name;$("pNumber").value=p.number;$("pPosition").value=p.position;$("pNationality").value=p.nationality;$("pAge").value=p.age;$("pStatus").value=p.status;scrollTo(0,0)}
+function deletePlayer(id){if(!confirm("Excluir jogador e números?"))return;const D=db();D.players=D.players.filter(x=>x.id!==id);D.playerStats=D.playerStats.filter(x=>x.playerId!==id);saveDB(D);renderPlayers()}
+function openStatsForm(pid,stat=null){const D=db(),p=D.players.find(x=>x.id===pid),seasons=D.seasons.filter(x=>x.careerId===currentCareerId);if(!seasons.length)return alert("Crie uma temporada primeiro.");const sid=stat?.seasonId||seasons[0].id,g=prompt(`Temporada: ${seasons.find(x=>x.id===sid)?.name}\nJogos:`,stat?.games??0);if(g===null)return;const goals=prompt("Gols:",stat?.goals??0);if(goals===null)return;const assists=prompt("Assistências:",stat?.assists??0);if(assists===null)return;const rating=prompt("Nota média:",stat?.rating??0);if(rating===null)return;let chosen=sid;if(!stat){const names=seasons.map((s,i)=>`${i+1} - ${s.name}`).join("\n"),choice=prompt("Escolha a temporada pelo número:\n"+names,"1");if(choice===null)return;chosen=seasons[Math.max(0,n(choice)-1)]?.id||seasons[0].id;const existing=D.playerStats.find(x=>x.playerId===pid&&x.seasonId===chosen);if(existing)return openStatsForm(pid,existing)}if(stat)Object.assign(D.playerStats.find(x=>x.id===stat.id),{games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});else D.playerStats.push({id:uid(),careerId:currentCareerId,playerId:pid,seasonId:chosen,games:n(g),goals:n(goals),assists:n(assists),rating:n(rating)});saveDB(D);renderPlayers()}
+function editSeasonStats(id){const st=db().playerStats.find(x=>x.id===id);openStatsForm(st.playerId,st)}function deleteSeasonStats(id){const D=db();D.playerStats=D.playerStats.filter(x=>x.id!==id);saveDB(D);renderPlayers()}
+function renderTotals(){const D=db(),ps=D.players.filter(x=>x.careerId===currentCareerId).map(p=>({...p,...playerTotals(p.id)})).sort((a,b)=>b.goals-a.goals);$("totalRanking").innerHTML=ps.length?`<div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th><th>Posição</th><th>Jogos</th><th>Gols</th><th>Assistências</th><th>Nota</th></tr></thead><tbody>${ps.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.position||"-")}</td><td>${p.games}</td><td>${p.goals}</td><td>${p.assists}</td><td>${p.rating.toFixed(2)}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">Sem jogadores.</div>'}
+function saveMatch(){const D=db();D.matches.push({id:uid(),careerId:currentCareerId,seasonId:n($("mSeason").value),opponent:$("mOpponent").value.trim(),competition:$("mCompetition").value.trim(),gf:n($("mGF").value),ga:n($("mGA").value)});saveDB(D);toggle("matchForm");renderMatches()}
+function renderMatches(){const D=db(),a=D.matches.filter(x=>x.careerId===currentCareerId);$("matchList").innerHTML=a.length?`<div class="table-wrap"><table><thead><tr><th>Temporada</th><th>Competição</th><th>Adversário</th><th>Placar</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(D.seasons.find(s=>s.id===x.seasonId)?.name||"-")}</td><td>${esc(x.competition)}</td><td>${esc(x.opponent)}</td><td>${x.gf} x ${x.ga}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">Sem partidas.</div>'}
+function saveTitle(){const D=db();D.titles.push({id:uid(),careerId:currentCareerId,seasonId:n($("tSeason").value),competition:$("tCompetition").value.trim()});saveDB(D);toggle("titleForm");renderTitles()}
+function renderTitles(){const D=db(),a=D.titles.filter(x=>x.careerId===currentCareerId);$("titleList").innerHTML=a.length?a.map(x=>`<div class="card"><h3>🏆 ${esc(x.competition)}</h3><p>${esc(D.seasons.find(s=>s.id===x.seasonId)?.name||"-")}</p></div>`).join(""):'<div class="empty">Sem títulos.</div>'}
+function saveTransfer(){const D=db();D.transfers.push({id:uid(),careerId:currentCareerId,seasonId:n($("trSeason").value),player:$("trPlayer").value.trim(),type:$("trType").value,value:n($("trValue").value)});saveDB(D);toggle("transferForm");renderTransfers()}
+function renderTransfers(){const D=db(),a=D.transfers.filter(x=>x.careerId===currentCareerId);$("transferList").innerHTML=a.length?`<div class="table-wrap"><table><thead><tr><th>Temporada</th><th>Jogador</th><th>Tipo</th><th>Valor</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(D.seasons.find(s=>s.id===x.seasonId)?.name||"-")}</td><td>${esc(x.player)}</td><td>${esc(x.type)}</td><td>${x.value}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">Sem transferências.</div>'}
+function file64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+async function analyzePrint(){const file=$("aiFile").files[0];if(!file)return alert("Escolha uma imagem.");if(file.size>3000000)return alert("Use uma imagem menor que 3 MB.");$("aiStatus").textContent="Analisando...";try{const data=await file64(file),r=await fetch("/api/analisar-print",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({imagemBase64:data,mimeType:file.type,tipo:$("aiType").value,temporada:db().seasons.find(x=>x.id===n($("aiSeason").value))?.name||""})}),j=await r.json();if(!r.ok)throw Error(j.erro||"Erro");currentAI=j.analise;$("aiJson").textContent=JSON.stringify(currentAI,null,2);$("aiReview").classList.remove("hidden");$("aiStatus").textContent="Análise concluída. Revise os dados."}catch(e){$("aiStatus").textContent="Erro: "+e.message}}
+function importAIData(){if(!currentAI)return;const D=db(),seasonId=n($("aiSeason").value);(currentAI.jogadores||[]).forEach(j=>{if(!j.nome)return;let p=D.players.find(x=>x.careerId===currentCareerId&&x.name.toLowerCase()===j.nome.toLowerCase());if(!p){p={id:uid(),careerId:currentCareerId,name:j.nome,number:n(j.numero),position:j.posicao||"",nationality:j.nacionalidade||"",age:n(j.idade),status:j.status||"Reserva"};D.players.push(p)}if([j.jogos,j.gols,j.assistencias,j.notaMedia].some(v=>v!==null&&v!==undefined)){let st=D.playerStats.find(x=>x.playerId===p.id&&x.seasonId===seasonId);const data={games:n(j.jogos),goals:n(j.gols),assists:n(j.assistencias),rating:n(j.notaMedia)};if(st)Object.assign(st,data);else D.playerStats.push({id:uid(),careerId:currentCareerId,playerId:p.id,seasonId,...data})}});(currentAI.partidas||[]).forEach(x=>{if(x.adversario)D.matches.push({id:uid(),careerId:currentCareerId,seasonId,opponent:x.adversario,competition:x.competicao||"",gf:n(x.golsTime),ga:n(x.golsAdversario)})});(currentAI.transferencias||[]).forEach(x=>{if(x.jogador)D.transfers.push({id:uid(),careerId:currentCareerId,seasonId,player:x.jogador,type:x.tipo||"Contratação",value:n(x.valor)})});if((currentAI.classificacao||[]).length)D.classifications.push({id:uid(),careerId:currentCareerId,seasonId,rows:currentAI.classificacao});saveDB(D);alert("Dados importados. Confira as telas do save.");$("aiReview").classList.add("hidden");currentAI=null}
+function exportBackup(){const b=new Blob([JSON.stringify(db(),null,2)],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="fm-career-stats.json";a.click();URL.revokeObjectURL(u)}
+function importBackup(e){const f=e.target.files[0],r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(confirm("Substituir todos os dados?")){saveDB(x);goHome()}}catch{alert("Backup inválido.")}};r.readAsText(f)}
+document.addEventListener("DOMContentLoaded",()=>{if(!localStorage.getItem(KEY))saveDB(db0());goHome()});
 </script>
-</body>
-</html>
+</body></html>
