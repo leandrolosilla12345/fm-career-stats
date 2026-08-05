@@ -131,17 +131,49 @@ body{
 
     </div>
 
-    <div class="content">
+    <div class="header">
 
-        <div class="header">
+    <h1>Meus saves</h1>
 
-            <h1>Meus saves</h1>
+    <button class="new-save" onclick="mostrarFormulario()">
+        + Criar novo save
+    </button>
 
-            <button class="new-save">
-                + Criar novo save
-            </button>
+</div>
 
-        </div>
+<div id="novoSave" style="display:none; margin-bottom:30px;">
+
+    <div class="card">
+
+        <h2 style="margin-bottom:20px;">
+            Criar novo save
+        </h2>
+
+        <input
+            type="text"
+            placeholder="Nome do save"
+            style="width:100%;padding:12px;border-radius:10px;margin-bottom:15px;"
+        >
+
+        <input
+            type="text"
+            placeholder="Nome do clube"
+            style="width:100%;padding:12px;border-radius:10px;margin-bottom:15px;"
+        >
+
+        <input
+            type="text"
+            placeholder="Treinador"
+            style="width:100%;padding:12px;border-radius:10px;margin-bottom:15px;"
+        >
+
+        <button class="new-save">
+            Salvar
+        </button>
+
+    </div>
+
+</div>
 
         <div class="cards">
 
@@ -165,6 +197,16 @@ body{
     </div>
 
 </div>
+<script>
+function mostrarFormulario() {
+    const formulario = document.getElementById("novoSave");
 
+    if (formulario.style.display === "none") {
+        formulario.style.display = "block";
+    } else {
+        formulario.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>
