@@ -107,7 +107,8 @@ body {
     margin-bottom: 20px;
 }
 
-.form-card input {
+.form-card input,
+.form-card select {
     width: 100%;
     padding: 13px;
     margin-bottom: 14px;
@@ -118,7 +119,8 @@ body {
     outline: none;
 }
 
-.form-card input:focus {
+.form-card input:focus,
+.form-card select:focus {
     border-color: #7c3aed;
 }
 
@@ -233,21 +235,9 @@ body {
 
         </div>
 
-        <div id="listaSaves" class="cards">
+        html
 
-            <div class="card">
-                <h3>Borussia Dortmund</h3>
-                <p>Temporada: 2026/27</p>
-            </div>
-
-            <div class="card">
-                <h3>São Paulo</h3>
-                <p>Temporada: 2027</p>
-            </div>
-
-            <div class="card">
-                <h3>Manchester United</h3>
-                <p>Temporada: 2028/29</p>
+        
             </div>
 
         </div>
@@ -293,9 +283,181 @@ function salvarSave() {
     document.getElementById("treinador").value = "";
     document.getElementById("temporada").value = "";
 
-    document.getElementById("novoSave").style.display = "none";
+    document.getElementById("novoSave").style.display = "none";      
 }
 </script>
 
 </body>
 </html>
+<script>
+const CHAVE_SAVES = "fmCareerStatsSaves";
+
+function mostrarFormulario() {
+    const formulario = document.getElementById("novoSave");
+    const estaAberto = formulario.style.display === "block";
+
+    formulario.style.display = estaAberto ? "none" : "block";
+}
+
+function obterSaves() {
+    try {
+        const dadosSalvos = localStorage.getItem(CHAVE_SAVES);
+        return dadosSalvos ? JSON.parse(dadosSalvos) : [];
+    } catch (erro) {
+        console.error("Erro ao carregar os saves:", erro);
+        return [];
+    }
+}
+
+function guardarSaves(saves) {
+    localStorage.setItem(CHAVE_SAVES, JSON.stringify(saves));
+}
+
+function salvarSave() {
+    const tipoSave = document.getElementById("tipoSave").value;
+    const nomeSave = document.getElementById("nomeSave").value.trim();
+    const nomeClube = document.getElementById("nomeClube").value.trim();
+    const treinador = document.getElementById("treinador").value.trim();
+    const temporada = document.getElementById("temporada").value.trim();
+
+    if (!tipoSave || !nomeSave || !nomeClube || !temporada) {
+        alert(
+            "Preencha o tipo de save, o nome do save, o clube ou seleção e a temporada."
+        );
+        return;
+    }
+
+    const novoSave = {
+        id: Date.now(),
+        tipo: tipoSave,
+        nomeSave: nomeSave,
+        clube: nomeClube,
+        treinador: treinador,
+        temporada: temporada
+    };
+
+    const saves = obterSaves();
+    saves.push(novoSave);
+    guardarSaves(saves);
+
+    limparFormulario();
+    carregarSaves();
+
+    document.getElementById("novoSave").style.display = "none";
+}
+
+function limparFormulario() {
+    document.getElementById("tipoSave").value = "";
+    document.getElementById("nomeSave").value = "";
+    document.getElementById("nomeClube").value = "";
+    document.getElementById("treinador").value = "";
+    document.getElementById("temporada").value = "";
+}
+
+function criarCard(save) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = save.clube;
+
+    const tipo = document.createElement("p");
+    tipo.textContent = `Tipo: ${save.tipo}`;
+
+    const nome = document.createElement("p");
+    nome.textContent = `Save: ${save.nomeSave}`;
+
+    const temporada = document.createElement("p");
+    temporada.textContent = `Temporada: ${save.temporada}`;
+
+    card.appendChild(titulo);
+    card.appendChild(tipo);
+    card.appendChild(nome);
+    card.appendChild(temporada);
+
+    if (save.treinador) {
+        const treinador = document.createElement("p");
+        treinador.textContent = `Treinador: ${save.treinador}`;
+        card.appendChild(treinador);
+    }
+
+    const botaoExcluir = document.createElement("button");
+    botaoExcluir.textContent = "Excluir save";
+    botaoExcluir.style.marginTop = "18px";
+    botaoExcluir.style.padding = "9px 12px";
+    botaoExcluir.style.border = "none";
+    botaoExcluir.style.borderRadius = "8px";
+    botaoExcluir.style.background = "#dc2626";
+    botaoExcluir.style.color = "white";
+    botaoExcluir.style.cursor = "pointer";
+
+    botaoExcluir.addEventListener("click", function () {
+        excluirSave(save.id);
+    });
+
+    card.appendChild(botaoExcluir);
+
+    return card;
+}
+
+function carregarSaves() {
+    const lista = document.getElementById("listaSaves");
+    const saves = obterSaves();
+
+    lista.innerHTML = "";
+
+    if (saves.length === 0) {
+        const mensagem = document.createElement("div");
+        mensagem.className = "card";
+
+        const titulo = document.createElement("h3");
+        titulo.textContent = "Nenhum save criado";
+
+        const texto = document.createElement("p");
+        texto.textContent =
+            "Clique em “Criar novo save” para começar sua carreira.";
+
+        mensagem.appendChild(titulo);
+        mensagem.appendChild(texto);
+        lista.appendChild(mensagem);
+
+        return;
+    }
+
+    saves.forEach(function (save) {
+        lista.appendChild(criarCard(save));
+    });
+}
+
+function excluirSave(id) {
+    const confirmar = window.confirm(
+        "Tem certeza de que deseja excluir este save?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    const saves = obterSaves();
+    const savesAtualizados = saves.filter(function (save) {
+        return save.id !== id;
+    });
+
+    guardarSaves(savesAtualizados);
+    carregarSaves();
+}
+
+document.addEventListener("DOMContentLoaded", carregarSaves);
+</script>
+
+<h2>Criar novo save</h2>
+
+<select id="tipoSave">
+    <option value="">Escolha o tipo de save</option>
+    <option value="Clube real">Clube real</option>
+    <option value="Clube fictício">Clube fictício</option>
+    <option value="Seleção nacional">Seleção nacional</option>
+</select>
+
+<input
+    id="nomeSave"
