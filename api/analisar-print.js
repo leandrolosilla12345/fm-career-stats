@@ -41,6 +41,9 @@ REGRAS:
 - Quando um número não estiver legível, use 0.
 - Não troque as colunas de jogos, gols, assistências e nota.
 - Preserve os nomes como aparecem no print.
+- Em "posicaoOriginal", escreva exatamente a posição encontrada na imagem.
+- Em "grupoPosicao", use somente: "Goleiro", "Defesa", "Meio", "Ataque" ou "Não definido".
+- Converta goleiros para Goleiro; zagueiros, laterais e alas defensivos para Defesa; volantes e meias para Meio; pontas e atacantes para Ataque.
 - Devolva SOMENTE um JSON válido, sem markdown e sem explicações.
 
 Formato obrigatório:
@@ -53,6 +56,8 @@ Formato obrigatório:
       "nome": "",
       "numero": 0,
       "posicao": "",
+      "posicaoOriginal": "",
+      "grupoPosicao": "",
       "nacionalidade": "",
       "idade": 0,
       "status": "",
@@ -133,6 +138,8 @@ const responseSchema = {
           nome: { type: "STRING" },
           numero: { type: "INTEGER" },
           posicao: { type: "STRING" },
+          posicaoOriginal: { type: "STRING" },
+          grupoPosicao: { type: "STRING" },
           nacionalidade: { type: "STRING" },
           idade: { type: "INTEGER" },
           status: { type: "STRING" },
@@ -144,7 +151,7 @@ const responseSchema = {
           notaMedia: { type: "NUMBER" }
         },
         required: [
-          "nome", "numero", "posicao", "nacionalidade", "idade", "status",
+          "nome", "numero", "posicao", "posicaoOriginal", "grupoPosicao", "nacionalidade", "idade", "status",
           "jogos", "titular", "minutos", "gols", "assistencias", "notaMedia"
         ]
       }
@@ -278,7 +285,7 @@ export default async function handler(request, response) {
 
     const endereco =
       "https://generativelanguage.googleapis.com/v1beta/models/" +
-     "gemini-3.5-flash-lite:generateContent?key=" +
+      "gemini-2.5-flash:generateContent?key=" +
       encodeURIComponent(apiKey);
 
     const resultado = await fetch(endereco, {
