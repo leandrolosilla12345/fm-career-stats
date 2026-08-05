@@ -278,7 +278,7 @@ export default async function handler(request, response) {
 
     const endereco =
       "https://generativelanguage.googleapis.com/v1beta/models/" +
-      "gemini-2.5-flash:generateContent?key=" +
+      "gemini-2.5-flash-lite:generateContent?key=" +
       encodeURIComponent(apiKey);
 
     const resultado = await fetch(endereco, {
