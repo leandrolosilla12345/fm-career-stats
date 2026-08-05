@@ -143,6 +143,17 @@ body {
 
 .card p {
     color: #cbd5e1;
+    margin-top: 6px;
+}
+
+.delete-button {
+    margin-top: 18px;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
@@ -198,16 +209,17 @@ body {
         </div>
 
         <div id="novoSave" class="form-area">
-
             <div class="form-card">
 
                 <h2>Criar novo save</h2>
-<select id="tipoSave">
-    <option value="">Escolha o tipo de save</option>
-    <option value="Clube real">Clube real</option>
-    <option value="Clube fictício">Clube fictício</option>
-    <option value="Seleção nacional">Seleção nacional</option>
-</select>
+
+                <select id="tipoSave">
+                    <option value="">Escolha o tipo de save</option>
+                    <option value="Clube real">Clube real</option>
+                    <option value="Clube fictício">Clube fictício</option>
+                    <option value="Seleção nacional">Seleção nacional</option>
+                </select>
+
                 <input
                     id="nomeSave"
                     type="text"
@@ -217,7 +229,7 @@ body {
                 <input
                     id="nomeClube"
                     type="text"
-                    placeholder="Nome do clube"
+                    placeholder="Nome do clube ou seleção"
                 >
 
                 <input
@@ -237,69 +249,21 @@ body {
                 </button>
 
             </div>
-
         </div>
 
-        
-            </div>
-
-        </div>
+        <div id="listaSaves" class="cards"></div>
 
     </main>
 
 </div>
 
 <script>
-function mostrarFormulario() {
-    const formulario = document.getElementById("novoSave");
-
-    if (formulario.style.display === "block") {
-        formulario.style.display = "none";
-    } else {
-        formulario.style.display = "block";
-    }
-}
-
-function salvarSave() {
-    const nomeSave = document.getElementById("nomeSave").value.trim();
-    const nomeClube = document.getElementById("nomeClube").value.trim();
-    const temporada = document.getElementById("temporada").value.trim();
-
-    if (!nomeSave || !nomeClube || !temporada) {
-        alert("Preencha o nome do save, o clube e a temporada.");
-        return;
-    }
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>${nomeClube}</h3>
-        <p>Save: ${nomeSave}</p>
-        <p>Temporada: ${temporada}</p>
-    `;
-
-    document.getElementById("listaSaves").appendChild(card);
-
-    document.getElementById("nomeSave").value = "";
-    document.getElementById("nomeClube").value = "";
-    document.getElementById("treinador").value = "";
-    document.getElementById("temporada").value = "";
-
-    document.getElementById("novoSave").style.display = "none";      
-}
-</script>
-
-</body>
-</html>
-<script>
 const CHAVE_SAVES = "fmCareerStatsSaves";
 
 function mostrarFormulario() {
     const formulario = document.getElementById("novoSave");
-    const estaAberto = formulario.style.display === "block";
-
-    formulario.style.display = estaAberto ? "none" : "block";
+    formulario.style.display =
+        formulario.style.display === "block" ? "none" : "block";
 }
 
 function obterSaves() {
@@ -324,9 +288,7 @@ function salvarSave() {
     const temporada = document.getElementById("temporada").value.trim();
 
     if (!tipoSave || !nomeSave || !nomeClube || !temporada) {
-        alert(
-            "Preencha o tipo de save, o nome do save, o clube ou seleção e a temporada."
-        );
+        alert("Preencha o tipo de save, o nome do save, o clube ou seleção e a temporada.");
         return;
     }
 
@@ -345,7 +307,6 @@ function salvarSave() {
 
     limparFormulario();
     carregarSaves();
-
     document.getElementById("novoSave").style.display = "none";
 }
 
@@ -385,14 +346,8 @@ function criarCard(save) {
     }
 
     const botaoExcluir = document.createElement("button");
+    botaoExcluir.className = "delete-button";
     botaoExcluir.textContent = "Excluir save";
-    botaoExcluir.style.marginTop = "18px";
-    botaoExcluir.style.padding = "9px 12px";
-    botaoExcluir.style.border = "none";
-    botaoExcluir.style.borderRadius = "8px";
-    botaoExcluir.style.background = "#dc2626";
-    botaoExcluir.style.color = "white";
-    botaoExcluir.style.cursor = "pointer";
 
     botaoExcluir.addEventListener("click", function () {
         excluirSave(save.id);
@@ -417,13 +372,11 @@ function carregarSaves() {
         titulo.textContent = "Nenhum save criado";
 
         const texto = document.createElement("p");
-        texto.textContent =
-            "Clique em “Criar novo save” para começar sua carreira.";
+        texto.textContent = "Clique em “Criar novo save” para começar sua carreira.";
 
         mensagem.appendChild(titulo);
         mensagem.appendChild(texto);
         lista.appendChild(mensagem);
-
         return;
     }
 
@@ -433,9 +386,7 @@ function carregarSaves() {
 }
 
 function excluirSave(id) {
-    const confirmar = window.confirm(
-        "Tem certeza de que deseja excluir este save?"
-    );
+    const confirmar = window.confirm("Tem certeza de que deseja excluir este save?");
 
     if (!confirmar) {
         return;
@@ -453,14 +404,5 @@ function excluirSave(id) {
 document.addEventListener("DOMContentLoaded", carregarSaves);
 </script>
 
-<h2>Criar novo save</h2>
-
-<select id="tipoSave">
-    <option value="">Escolha o tipo de save</option>
-    <option value="Clube real">Clube real</option>
-    <option value="Clube fictício">Clube fictício</option>
-    <option value="Seleção nacional">Seleção nacional</option>
-</select>
-
-<input
-    id="nomeSave"
+</body>
+</html>
